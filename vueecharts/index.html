@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+    <script src="https://cdn.staticfile.org/echarts/5.4.1/echarts.min.js"></script>
+    <script type="text/javascript" src="js/rem.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <title>智慧物流服务中心-首页</title>
+</head>
+
+<body style="visibility: hidden;">
+    <div class="container-flex" tabindex="0" hidefocus="true">
+        <div class="box-left">
+            <div class="left-top">
+                <div class="current-num">
+                    <div>当前到件量</div>
+                    <p>123,456,789</p>
+                </div>
+            </div>
+            <div class="left-center">
+                <div class="title-box">
+                    <h6>访问流量图</h6>
+                </div>
+                <div class="chart-box">
+                    <div id="liuliangtu" style="width:100%;height:90%;"></div>
+
+                </div>
+            </div>
+            <div class="left-bottom" class="select">
+                <div class="title-box">
+                    <h6>广东省寄派件数据</h6>
+<!--                    <img class="line-img" src="images/line-blue.png" alt="">-->
+<!--                    <button id="filBtn"><img src="images/select_icon.png" alt="">筛选</button>-->
+                </div>
+
+                <div class="chart-box">
+                    <div id="gaofengtu" style="width:100%;height:95%;"></div>
+
+
+                </div>
+            </div>
+        </div>
+        <div class="box-center">
+
+<!--            11-->
+            <div class="center-top">
+                <h1>WEB点击日志分析</h1>
+            </div>
+
+<!--            22-->
+            <div class="center-center">
+                <div class="weather-box">
+                    <div class="data">
+                        <p class="time" id="time">00:00:00</p>
+                        <p id="date"></p>
+                    </div>
+
+                </div>
+                <img src="images/line_bg.png" alt="">
+                <div class="select-box">
+                    <ul id="barType">
+                        <li class="active" data-value="1">派件</li>
+                        <li data-value="2">寄件</li>
+                    </ul>
+                    <div data-type="2">
+                        <div class="select" tabindex="0" hidefocus="true">
+                            <div class="select-div">
+                                公司
+                            </div>
+                            <ul class="select-ul company">
+                                <li class="active" data-value="">公司</li>
+                                <li data-value="1">顺丰</li>
+                                <li data-value="2">京东</li>
+                                <li data-value="2">EMS</li>
+                            </ul>
+                        </div>
+                        <div class="select" tabindex="0" hidefocus="true">
+                            <div class="select-div">
+                                快件类型
+                            </div>
+                            <ul class="select-ul">
+                                <li class="active" data-value="">快件类型</li>
+                                <li data-value="0">文件</li>
+                                <li data-value="1">物品</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+<!--            33-->
+            <div class="center-bottom">
+                <div class="chart-box">
+                    <div id="ditu" style="width:100%;height:90%;"></div>
+
+                </div>
+
+            </div>
+
+        </div>
+        <div class="box-right">
+            <div class="right-top">
+                <div class="title-box">
+                    <h6 id="barTitle">派件数据</h6>
+                </div>
+
+                <div class="chart-box">
+                    <div id="zhexiantu" style="width:100%;height:90%;"></div>
+
+
+                </div>
+
+            </div>
+            <div class="right-center">
+                <div class="title-box">
+                    <p id="switchBtn"><span class="active" data-dataType="income">收入数据</span><img class="line-img" src="images/line-blue.png" alt=""><span data-dataType="expend">支出数据</span></p>
+
+                </div>
+                <div class="chart-box">
+                    <div id="bingtu" style="width:100%;height:90%;"></div>
+                </div>
+            </div>
+            <div class="right-bottom">
+                <div class="title-box">
+
+                </div>
+                <div class="chart-box">
+                    <div id="dynamic_data" style="width:100%;height:95%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+
+
+<!--地图-->
+<script type="text/javascript">
+    let diTu = echarts.init(document.getElementById('ditu'));
+    let dataList = [
+        {
+            name: "北京",
+            value: 54,
+        },
+        {
+            name: "南海诸岛",
+            value: 0,
+        },
+        {
+            name: "天津",
+            value: 13,
+        },
+        {
+            name: "上海",
+            value: 40,
+        },
+        {
+            name: "重庆",
+            value: 75,
+        },
+        {
+            name: "河北",
+            value: 13,
+        },
+        {
+            name: "河南",
+            value: 83,
+        },
+        {
+            name: "云南",
+            value: 11,
+        },
+        {
+            name: "辽宁",
+            value: 19,
+        },
+        {
+            name: "黑龙江",
+            value: 15,
+        },
+        {
+            name: "湖南",
+            value: 69,
+        },
+        {
+            name: "安徽",
+            value: 60,
+        },
+        {
+            name: "山东",
+            value: 39,
+        },
+        {
+            name: "新疆",
+            value: 4,
+        },
+        {
+            name: "江苏",
+            value: 31,
+        },
+        {
+            name: "浙江",
+            value: 104,
+        },
+        {
+            name: "江西",
+            value: 36,
+        },
+        {
+            name: "湖北",
+            value: 1052,
+        },
+        {
+            name: "广西",
+            value: 33,
+        },
+        {
+            name: "甘肃",
+            value: 7,
+        },
+        {
+            name: "山西",
+            value: 9,
+        },
+        {
+            name: "内蒙古",
+            value: 7,
+        },
+        {
+            name: "陕西",
+            value: 22,
+        },
+        {
+            name: "吉林",
+            value: 4,
+        },
+        {
+            name: "福建",
+            value: 18,
+        },
+        {
+            name: "贵州",
+            value: 5,
+        },
+        {
+            name: "广东",
+            value: 98,
+        },
+        {
+            name: "青海",
+            value: 1,
+        },
+        {
+            name: "西藏",
+            value: 0,
+        },
+        {
+            name: "四川",
+            value: 44,
+        },
+        {
+            name: "宁夏",
+            value: 4,
+        },
+        {
+            name: "海南",
+            value: 22,
+        },
+        {
+            name: "台湾",
+            value: 3,
+        },
+        {
+            name: "香港",
+            value: 5,
+        },
+        {
+            name: "澳门",
+            value: 5,
+        },
+    ];
+
+    let options = {
+        title: {
+            text: "全国好友分布图",
+            subtext: "朝阳",
+            left: "center",
+            textStyle: {
+                color: "#fff",
+                fontSize: 30,
+            },
+            subtextStyle: {
+                fontSize: 20,
+            },
+        },
+        tooltip: {
+            triggerOn: "click",
+            formatter: function(e, t, n) {
+                return e.seriesName + "<br />" + e.name + "：" + e.value;
+            },
+        },
+        // 热力地图
+        visualMap: {
+            min: 0,
+            max: 1000,
+            left: 240,
+            textStyle: {
+                color: "#fff",
+            },
+            pieces: [
+                {
+                    gt: 100,
+                    label: "> 100 人",
+                    color: "#7f1100",
+                },
+                {
+                    gte: 10,
+                    lte: 100,
+                    label: "10 - 100 人",
+                    color: "#ff5428",
+                },
+                {
+                    gte: 1,
+                    lt: 10,
+                    label: "1 - 9 人",
+                    color: "#ff8c71",
+                },
+                {
+                    value: 0,
+                    label: "无",
+                    color: "#ffd768",
+                },
+            ],
+        },
+
+        series: [
+            {
+                name: "好友数",
+                data: dataList,
+                type: "map",
+                map: "china",
+                zoom: 1.2,
+                aspectScale: 0.75,
+                label: {
+                    // 默认文本标签样式
+                    normal: {
+                        color: "white",
+                        show: true,
+                    },
+                    // 高亮文本标签样式
+                    emphasis: {
+                        color: "yellow",
+                        fontSize: 22,
+                        fontWeight: "bold",
+                    },
+                },
+                itemStyle: {
+                    // 默认区域样式
+                    normal: {
+                        // 区域背景透明
+                        areaColor: "transparent",
+                        borderColor: "rgba(39,211,233, 1)",
+                        borderWidth: 1,
+                    },
+                    // 高亮区域样式
+                    emphasis: {
+                        // 高亮区域背景色
+                        areaColor: "#01ADF2",
+                    },
+                },
+            },
+        ],
+    };
+
+    diTu.setOption(options);
+
+    // 添加窗口大小改变监听事件，当窗口大小改变时，图表会重新绘制，自适应窗口大小
+    window.addEventListener("resize", function() {
+        diTu.resize();
+    });
+
+
+</script>
+<style scoped>
+    .mapBox {
+        background: #020933;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 30px;
+        box-sizing: border-boxs;
+    }
+</style>
+</script>
+
+<!--饼图-->
+<script type="text/javascript">
+
+    var bingtu=echarts.init(document.getElementById('bingtu'));
+    window.addEventListener('resize', function () {
+        gaofengtu.resize();
+        // myCharts.resize();
+    });
+
+
+
+
+    var option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                // Use axis to trigger tooltip
+                type: 'shadow' // 'shadow' as default; can also be 'line' or 'shadow'
+            }
+        },
+        legend: {},
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value'
+        },
+        yAxis: {
+            type: 'category',
+            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        },
+        series: [
+            {
+                name: 'Direct',
+                type: 'bar',
+                stack: 'total',
+                label: {
+                    show: true
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                data: [320, 302, 301, 334, 390, 330, 320]
+            },
+            {
+                name: 'Mail Ad',
+                type: 'bar',
+                stack: 'total',
+                label: {
+                    show: true
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                data: [120, 132, 101, 134, 90, 230, 210]
+            },
+            {
+                name: 'Affiliate Ad',
+                type: 'bar',
+                stack: 'total',
+                label: {
+                    show: true
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                data: [220, 182, 191, 234, 290, 330, 310]
+            },
+            {
+                name: 'Video Ad',
+                type: 'bar',
+                stack: 'total',
+                label: {
+                    show: true
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                data: [150, 212, 201, 154, 190, 330, 410]
+            },
+            {
+                name: 'Search Engine',
+                type: 'bar',
+                stack: 'total',
+                label: {
+                    show: true
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                data: [820, 832, 901, 934, 1290, 1330, 1320]
+            }
+        ]
+    };
+
+    bingtu.setOption(option)
+</script>
+
+<!--//高峰图-->
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var gaofengtu = echarts.init(document.getElementById('gaofengtu'));
+    window.addEventListener('resize', function () {
+        gaofengtu.resize();
+        // myCharts.resize();
+    });
+    const colors = ['#5470C6', '#EE6666'];
+    var option = {
+        grid: {
+            top:'10%',
+            bottom: '20%' // 距离底部的距离为容器高度的 20%
+        },
+
+        tooltip: {
+            trigger: 'axis',
+            position: function (pt) {
+                return [pt[0], '0%'];
+            }
+        },
+
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            // prettier-ignore
+            data: ['00:00', '01:15', '02:30', '03:45', '05:00', '06:15', '07:30', '08:45', '10:00', '11:15', '12:30', '13:45', '15:00', '16:15', '17:30', '18:45', '20:00', '21:15', '22:30', '23:45']
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: {
+                formatter: '{value}W'
+            },
+            axisPointer: {
+                snap: true
+            }
+        },
+        visualMap: {
+            show: false,
+            dimension: 0,
+            pieces: [
+                {
+                    lte: 6,
+                    color: 'green'
+                },
+                {
+                    gt: 6,
+                    lte: 8,
+                    color: 'red'
+                },
+                {
+                    gt: 8,
+                    lte: 14,
+                    color: 'green'
+                },
+                {
+                    gt: 14,
+                    lte: 17,
+                    color: 'red'
+                },
+                {
+                    gt: 17,
+                    color: 'green'
+                }
+            ]
+        },
+        series: [
+            {
+                name: 'Electricity',
+                type: 'line',
+                smooth: true,
+                // prettier-ignore
+                data: [300, 280, 250, 260, 270, 300, 550, 500, 400, 390, 380, 390, 400, 500, 600, 750, 800, 700, 600, 400],
+                markArea: {
+                    itemStyle: {
+                        color: 'rgba(255, 173, 177, 0.4)'
+                    },
+                    data: [
+                        [
+                            {
+                                name: 'Morning Peak',
+                                xAxis: '07:30'
+                            },
+                            {
+                                xAxis: '10:00'
+                            }
+                        ],
+                        [
+                            {
+                                name: 'Evening Peak',
+                                xAxis: '17:30'
+                            },
+                            {
+                                xAxis: '21:15'
+                            }
+                        ]
+                    ]
+                }
+            }
+        ]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    gaofengtu.setOption(option);
+</script>
+
+<!--//流量图-->
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var liuliangtu = echarts.init(document.getElementById('liuliangtu'));
+    window.addEventListener('resize', function () {
+        liuliangtu.resize();
+        // myCharts.resize();
+    });
+    let base = +new Date(1968, 9, 3);
+    let oneDay = 24 * 3600 * 1000;
+    let date = [];
+    let data = [Math.random() * 300];
+    for (let i = 1; i < 2000; i++) {
+        var now = new Date((base += oneDay));
+        date.push([now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'));
+        data.push(Math.round((Math.random() - 0.5) * 20 + data[i - 1]));
+    }
+    console.log(data)
+    var option = {
+        grid: {
+            top:'10%',
+            // bottom: '20%' // 距离底部的距离为容器高度的 20%
+        },
+        tooltip: {
+            trigger: 'axis',
+            position: function (pt) {
+                return [pt[0], '0%'];
+            }
+        },
+        // title: {
+        //     left: 'center',
+        //     text: 'Large Area Chart'
+        // },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: date
+        },
+        yAxis: {
+            type: 'value',
+            boundaryGap: [0, '20%']
+        },
+        dataZoom: [
+            {
+                type: 'slider',
+                start: 0,
+                end: 10
+            },
+
+        ],
+        series: [
+            {
+                name: 'Fake Data',
+                type: 'line',
+                symbol: 'none',
+                sampling: 'lttb',
+                itemStyle: {
+                    color: 'rgb(255, 70, 131)'
+                },
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        {
+                            offset: 0,
+                            color: 'rgb(255, 158, 68)'
+                        },
+                        {
+                            offset: 1,
+                            color: 'rgb(255, 70, 131)'
+                        }
+                    ])
+                },
+                data: data
+            }
+        ]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    liuliangtu.setOption(option);
+
+</script>
+
+<!--//对比折线图-->
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+
+    var zhexiantu = echarts.init(document.getElementById('zhexiantu'));
+    window.addEventListener('resize', function () {
+        zhexiantu.resize();
+        // myCharts.resize();
+    });
+    var color = ['#bb80d9', '#b5ee66'];
+    var option = {
+
+        color: color,
+        tooltip: {
+            trigger: 'none',
+            axisPointer: {
+                type: 'cross'
+            }
+        },
+        legend: {},
+        grid: {
+            top: '10%',
+            bottom: '25%',
+        },
+        xAxis: [
+            {
+                type: 'category',
+                axisTick: {
+                    alignWithLabel: true
+                },
+                axisLine: {
+                    onZero: false,
+                    lineStyle: {
+                        color: colors[1]
+                    }
+                },
+                axisPointer: {
+                    label: {
+                        formatter: function (params) {
+                            return (
+                                'Precipitation  ' +
+                                params.value +
+                                (params.seriesData.length ? '：' + params.seriesData[0].data : '')
+                            );
+                        }
+                    }
+                },
+                // prettier-ignore
+                data: ['2016-1', '2016-2', '2016-3', '2016-4', '2016-5', '2016-6', '2016-7', '2016-8', '2016-9', '2016-10', '2016-11', '2016-12']
+            },
+            {
+                type: 'category',
+                axisTick: {
+                    alignWithLabel: true
+                },
+                axisLine: {
+                    onZero: false,
+                    lineStyle: {
+                        color: colors[0]
+                    }
+                },
+                axisPointer: {
+                    label: {
+                        formatter: function (params) {
+                            return (
+                                'Precipitation  ' +
+                                params.value +
+                                (params.seriesData.length ? '：' + params.seriesData[0].data : '')
+                            );
+                        }
+                    }
+                },
+                // prettier-ignore
+                data: ['2015-1', '2015-2', '2015-3', '2015-4', '2015-5', '2015-6', '2015-7', '2015-8', '2015-9', '2015-10', '2015-11', '2015-12']
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value'
+            }
+        ],
+        series: [
+            {
+                // name: 'Precipitation(2015)',
+
+                type: 'line',
+                xAxisIndex: 1,
+                smooth: true,
+                // label:{
+                //     show: true,
+                //     position:"top",
+                //     color: '#ff0000'
+                //
+                // },
+                emphasis: {
+                    focus: 'series'
+                },
+                data: [
+                    2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3
+                ]
+            },
+            {
+                // name: 'Precipitation(2016)',
+                type: 'line',
+                smooth: true,
+                emphasis: {
+                    focus: 'series'
+                },
+                data: [
+                    3.9, 5.9, 11.1, 18.7, 48.3, 69.2, 231.6, 46.6, 55.4, 18.4, 10.3, 0.7
+                ]
+            }
+        ]
+    };
+    zhexiantu.setOption(option);
+</script>
+
+<script type="text/javascript">
+    var app = {};
+
+
+    var dynamic_data=echarts.init(document.getElementById('dynamic_data'));
+    window.addEventListener('resize', function () {
+        dynamic_data.resize();
+        // myCharts.resize();
+    });
+    const categories = (function () {
+        let now = new Date();
+        let res = [];
+        let len = 10;
+        while (len--) {
+            res.unshift(now.toLocaleTimeString().replace(/^\D*/, ''));
+            now = new Date(+now - 2000);
+        }
+        return res;
+    })();
+    const categories2 = (function () {
+        let res = [];
+        let len = 10;
+        while (len--) {
+            res.push(10 - len - 1);
+        }
+        return res;
+    })();
+    const dynamicdata = (function () {
+        let res = [];
+        let len = 10;
+        while (len--) {
+            res.push(Math.round(Math.random() * 1000));
+        }
+        return res;
+    })();
+    const data2 = (function () {
+        let res = [];
+        let len = 0;
+        while (len < 10) {
+            res.push(+(Math.random() * 10 + 5).toFixed(1));
+            len++;
+        }
+        return res;
+    })();
+    option = {
+        grid:{
+            top: '20%',
+            bottom: '20%',
+        },
+        // title: {
+        //     text: 'Dynamic Data'
+        // },
+        tooltip: {
+
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+                label: {
+                    backgroundColor: '#283b56'
+                }
+            }
+        },
+        legend: {},
+        // toolbox: {
+        //     show: true,
+        //     feature: {
+        //         dataView: { readOnly: false },
+        //         restore: {},
+        //         saveAsImage: {}
+        //     }
+        // },
+        dataZoom: {
+            show: false,
+            start: 0,
+            end: 100
+        },
+        xAxis: [
+            {
+                type: 'category',
+                boundaryGap: true,
+                data: categories
+            },
+            {
+                type: 'category',
+                boundaryGap: true,
+                data: categories2
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                scale: true,
+                name: 'Price',
+                max: 30,
+                min: 0,
+                // boundaryGap: '50%',
+            },
+            {
+                type: 'value',
+                scale: true,
+                name: 'Order',
+                max: 1200,
+                min: 0,
+                // boundaryGap: '50%'
+            }
+        ],
+        series: [
+            {
+                // name: 'Dynamic Bar',
+                type: 'bar',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                data: dynamicdata
+            },
+            {
+                // name: 'Dynamic Line',
+                type: 'line',
+                data: data2
+            }
+        ]
+    };
+    app.count = 11;
+    setInterval(function () {
+        let axisData = new Date().toLocaleTimeString().replace(/^\D*/, '');
+        dynamicdata.shift();
+        dynamicdata.push(Math.round(Math.random() * 1000));
+        data2.shift();
+        data2.push(+(Math.random() * 10 + 5).toFixed(1));
+        categories.shift();
+        categories.push(axisData);
+        categories2.shift();
+        categories2.push(app.count++);
+        dynamic_data.setOption({
+            xAxis: [
+                {
+                    data: categories
+                },
+                {
+                    data: categories2
+                }
+            ],
+            series: [
+                {
+                    data: dynamicdata
+                },
+                {
+                    data: data2
+                }
+            ]
+        });
+    }, 2100);
+
+    dynamic_data.setOption(option)
+</script>
+
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            backendData: null
+        },
+        mounted: function () {
+            axios.get('/backend/api/data').then(response => {
+                this.backendData = response.data
+            })
+        }
+    })
+
+</script>
+
+
+<script src="https://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="js/layer/layer.min.js"></script>
+<script type="text/javascript" src="js/layer/laydate/laydate.js"></script>
+<script src="https://www.jq22.com/jquery/echarts-4.2.1.min.js"></script>
+<script type="text/javascript" src="js/china.js"></script>
+<script type="text/javascript" src="js/data/guangdong.js"></script>
+<script type="text/javascript" src="js/base.js"></script>
+<script type="text/javascript">
+    $('document').ready(function () {
+        $("body").css('visibility', 'visible');
+        var localData = [$('#teacher').val(), $('#start').val() + '/' + $('#end').val(), $('#leader').val()]
+        localStorage.setItem("data", localData);
+        $('#conBtn').on('click', function () {
+            localData = [$('#teacher').val(), $('#start').val() + '/' + $('#end').val(), $('#leader').val()]
+            if (typeof (Storage) !== "undefined") {
+                localStorage.setItem("data", localData);
+                var arr = localStorage.getItem("data").split(',');
+                $('#name_a').html(arr[0]);
+                $('#date_a').html(arr[1]);
+                $('#lea_a').html(arr[2]);
+            }
+        })
+        $('#fangda').on('click', function () {
+            if ($(this).siblings('ul').is(":hidden")) {
+                $(this).addClass('active').siblings('ul').show();
+            } else {
+                $(this).removeClass('active').siblings('ul').hide();
+            }
+        })
+
+        $('.modal-btn>li').on('click', function () {
+            var index = $(this).index();
+            if (index <= 2) {
+                $('.container').attr('style', 'visibility: visible').find('.pop-up').eq(index).attr('style', 'visibility: visible').siblings().attr('style', 'visibility: hidden');
+            } else if (index > 2 && index < 5) {
+                $('.container').attr('style', 'visibility: visible').find('.pop-up').eq(3).attr('style', 'visibility: visible').siblings().attr('style', 'visibility: hidden');
+                if (index != 3) {
+                    $('.pop-data .ranking-box').hide();
+                } else {
+                    $('.pop-data .ranking-box').show();
+                }
+                $('.cont-div').eq(index - 3).attr('style', 'visibility: visible').siblings('.cont-div').attr('style', 'visibility: hidden');
+            } else if (index == 5) {
+                $('.container').attr('style', 'visibility: visible').find('.pop-up').eq(3).attr('style', 'visibility: visible').siblings().attr('style', 'visibility: hidden');
+                $('.pop-data .ranking-box').hide();
+                if ($('#switchBtn').find('.active').data('datatype') == "income") {
+                    $('#titles').html('收入数据');
+                    $('#totalProfits').html('123,456.5元');
+                    $('.cont-div').eq(2).attr('style', 'visibility: visible').siblings('.cont-div').attr('style', 'visibility: hidden');
+                } else if ($('#switchBtn').find('.active').data('datatype') == 'expend') {
+                    $('#titles').html('支出数据');
+                    $('#totalProfits').html('32,111.4元');
+                    $('.cont-div').eq(2).attr('style', 'visibility: visible').siblings('div').attr('style', 'visibility: hidden');
+                }
+            }
+        })
+    })
+</script>
+
+
+
+</html>
