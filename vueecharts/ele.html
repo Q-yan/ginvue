@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Vue.js + Element UI 日期选择器示例</title>
+</head>
+<body>
+<div id="app">
+  <el-date-picker v-model="selectedDate" type="date" placeholder="选择日期"></el-date-picker>
+</div>
+
+<!-- 引入 Vue.js 和 Element UI 的 JavaScript 文件 -->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+<script>
+  new Vue({
+    el: '#app',
+    data() {
+      return {
+        selectedDate: '',
+      };
+    },
+    mounted() {
+      // Element UI 组件注册
+      Vue.use(ElementUI);
+    },
+  });
+</script>
+</body>
+</html>
