@@ -85,7 +85,7 @@
 
 <!--                <span class="demonstration">带快捷选项</span>-->
                 <el-date-picker
-                        v-model="value2"
+                        v-model="value1"
                         type="monthrange"
                         align="right"
                         unlink-panels
@@ -108,22 +108,16 @@
     <div class="box-right">
         <div class="right-top">
             <div class="title-box" style="text-align: right; justify-content: center;">
-                <el-select v-model="value" placeholder="请选择">
-                    <el-option
-                            v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                    </el-option>
-                </el-select>
-                <el-select v-model="value" placeholder="请选择">
-                    <el-option
-                            v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                    </el-option>
-                </el-select>
+                <el-date-picker
+                        v-model="value2"
+                        type="year"
+                        placeholder="选择日期">
+                </el-date-picker>
+                <el-date-picker
+                        v-model="value3"
+                        type="year"
+                        placeholder="选择日期">
+                </el-date-picker>
             </div>
 
             <div class="chart-box">
@@ -177,7 +171,9 @@
                     label: '北京烤鸭'
                 }],
 
-                value2: ''
+                value1: '',
+                value2: '',
+                value3: ''
             }
         },
         mounted() {
@@ -661,6 +657,7 @@
                 var dataList = [{
                     name: "海门",
                     value: 1000000
+
                 },
 
                 ];
