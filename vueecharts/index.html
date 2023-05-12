@@ -6,17 +6,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="renderer" content="webkit">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-    <script src="https://cdn.staticfile.org/echarts/5.4.1/echarts.min.js"></script>
+<!--    <script src="https://cdn.staticfile.org/echarts/5.4.1/echarts.min.js"></script>-->
+    <script src="js/echarts.min.js"></script>
     <script type="text/javascript" src="js/rem.js"></script>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://openlayers.org/en/v6.13.0/css/ol.css">
-    <script src="https://openlayers.org/en/v6.13.0/build/ol.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!--    <link rel="stylesheet" href="https://openlayers.org/en/v6.13.0/css/ol.css">-->
+    <!--    <script src="https://openlayers.org/en/v6.13.0/build/ol.js"></script>-->
+    <script src="js/axios.min.js"></script>
+    <link rel="stylesheet" href="css/index.css">
+    <script src="js/vue.js"></script>
     <!-- <script src="https://cdn.staticfile.org/echarts/5.4.1/echarts.min.js"></script> -->
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <!--    <script src="https://unpkg.com/element-ui/lib/index.js"></script>-->
+    <script src="js/index.js"></script>
     <script src="js/china.js"></script>
+
     <style>
         .el-date-editor--daterange.el-input, .el-date-editor--daterange.el-input__inner, .el-date-editor--timerange.el-input, .el-date-editor--timerange.el-input__inner {
             width: 290px;
@@ -26,108 +29,127 @@
 </head>
 
 <body style="visibility: hidden;">
-    <div id="app" class="container-flex" tabindex="0" hidefocus="true">
-        <div class="box-left">
-            <div class="left-top">
-                <div class="current-num">
-                    <div>当日总访问量</div>
-                    <p>123,456,789</p>
-                </div>
+<div id="app" class="container-flex" tabindex="0" hidefocus="true">
+    <div class="box-left">
+        <div class="left-top">
+            <div class="title-box">
+                <h6>访问高峰图</h6>
+                <!--                    <img class="line-img" src="images/line-blue.png" alt="">-->
+                <!--                    <button id="filBtn"><img src="images/select_icon.png" alt="">筛选</button>-->
             </div>
-            <div class="left-center">
-                <div class="title-box">
-                    <h6>访问流量图</h6>
-                </div>
-                <div class="chart-box">
-                    <div id="liuliangtu" style="width:100%;height:90%;"></div>
 
-                </div>
-            </div>
-            <div class="left-bottom" class="select">
-                <div class="title-box">
-                    <h6>访问高峰图</h6>
-<!--                    <img class="line-img" src="images/line-blue.png" alt="">-->
-<!--                    <button id="filBtn"><img src="images/select_icon.png" alt="">筛选</button>-->
-                </div>
-
-                <div class="chart-box">
-                    <div id="relitu" style="width:100%;height:95%;"></div>
+            <div class="chart-box">
+                <div id="relitu" style="width:90%;height:90%;"></div>
 
 
-                </div>
             </div>
         </div>
-        <div class="box-center">
-
-<!--            11-->
-            <div class="center-top">
-                <h1>WEB点击日志分析</h1>
+        <div class="left-center">
+            <div class="title-box">
+                <h6>访问流量图</h6>
             </div>
-
-<!--            22-->
-            <div class="center-center">
-                <img src="images/line_bg.png" alt="">
-                <div class="weather-box">
-                    <div class="data">
-                        <p class="time" id="time">00:00:00</p>
-                        <p id="date"></p>
-                    </div>
-
-                </div>
-                <img src="images/line_bg.png" alt="">
-            </div>
-
-
-<!--            33-->
-            <div id="map" class="center-bottom">
-                <div class="chart-box">
-                    <div id="ditu" style="width:100%;height:90%;"></div>
-
-                </div>
+            <div class="chart-box">
+                <div id="liuliangtu" style="width:100%;height:90%;"></div>
 
             </div>
+        </div>
+        <div class="left-bottom" class="select">
 
         </div>
-        <div class="box-right">
-            <div class="right-top">
-                <div class="title-box" style="text-align: right; justify-content: center;">
-                    <!-- <h6 id="barTitle">访问对比图</h6> -->
-                    <el-date-picker
-                        v-model="value1"
-                        size="small"
-                        type="daterange"
+    </div>
+    <div class="box-center">
+
+        <!--            11-->
+        <div class="center-top">
+            <h1>WEB点击日志分析</h1>
+        </div>
+
+        <!--            22-->
+        <div class="center-center">
+            <img src="images/line_bg.png" alt="">
+            <div class="weather-box">
+                <div class="data">
+                    <p class="time" id="time">00:00:00</p>
+                    <p id="date"></p>
+                </div>
+
+            </div>
+            <img src="images/line_bg.png" alt="">
+        </div>
+
+
+        <!--            33-->
+        <div id="map" class="center-bottom">
+            <div class="title-box" style="text-align: right; justify-content: center;">
+                <!-- <h6 id="barTitle">访问对比图</h6> -->
+
+<!--                <span class="demonstration">带快捷选项</span>-->
+                <el-date-picker
+                        v-model="value2"
+                        type="monthrange"
+                        align="right"
+                        unlink-panels
                         range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
-                        value-format="yyyy-MM-dd"
-                        @change="printTime">
-                    </el-date-picker>
-                </div>
+                        start-placeholder="开始月份"
+                        end-placeholder="结束月份"
+                        :picker-options="pickerOptions">
+                </el-date-picker>
+                        </el-date-picker>
 
-                <div class="chart-box">
-                    <div id="zhexiantu" style="width:100%;height:90%;"></div>
-                </div>
             </div>
-            <div class="right-center">
-                <div class="title-box">
-                    <p id="switchBtn"><span class="active" data-dataType="income">一周内访问类型分类量</span></p>
+            <div class="chart-box">
+                <div id="ditu" style="width:100%;height:90%;"></div>
 
-                </div>
-                <div class="chart-box">
-                    <div id="bingtu" style="width:100%;height:90%;"></div>
-                </div>
             </div>
-            <div class="right-bottom">
-                <div class="title-box">
-                    <p>实时数据访问量与流量对比</p>
 
-                </div>
-                <div class="chart-box">
-                    <div id="dynamic_data" style="width:100%;height:95%;"></div>
-                </div>
+        </div>
+
+    </div>
+    <div class="box-right">
+        <div class="right-top">
+            <div class="title-box" style="text-align: right; justify-content: center;">
+                <el-select v-model="value" placeholder="请选择">
+                    <el-option
+                            v-for="item in options"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                    </el-option>
+                </el-select>
+                <el-select v-model="value" placeholder="请选择">
+                    <el-option
+                            v-for="item in options"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                    </el-option>
+                </el-select>
+            </div>
+
+            <div class="chart-box">
+                <div id="zhexiantu" style="width:100%;height:90%;"></div>
+            </div>
+        </div>
+        <div class="right-center">
+            <div class="title-box">
+                <p id="switchBtn"><span class="active" data-dataType="income">一周内访问类型分类量</span></p>
+
+            </div>
+            <div class="chart-box">
+                <div id="bingtu" style="width:100%;height:90%;"></div>
+            </div>
+        </div>
+        <div class="right-bottom">
+            <div class="title-box">
+                <p>实时数据访问量与流量对比</p>
+
+            </div>
+            <div class="chart-box">
+                <div id="dynamic_data" style="width:100%;height:95%;"></div>
             </div>
         </div>
     </div>
+</div>
 
 </body>
 
@@ -138,9 +160,24 @@
         el: '#app',
         data() {
             return {
-                value1: '',
-                value2: '',
-                map: null
+                options: [{
+                    value: '选项1',
+                    label: '黄金糕'
+                }, {
+                    value: '选项2',
+                    label: '双皮奶'
+                }, {
+                    value: '选项3',
+                    label: '蚵仔煎'
+                }, {
+                    value: '选项4',
+                    label: '龙须面'
+                }, {
+                    value: '选项5',
+                    label: '北京烤鸭'
+                }],
+
+                value2: ''
             }
         },
         mounted() {
@@ -169,40 +206,40 @@
                 });
 
                 window.dataList = [
-                    { name: '澳门', value: 18 },
-                    { name: '香港', value: 273 },
-                    { name: '台湾', value: 153 },
-                    { name: '新疆', value: 76 },
-                    { name: '宁夏', value: 75 },
-                    { name: '青海', value: 18 },
-                    { name: '甘肃', value: 134 },
-                    { name: '陕西', value: 248 },
-                    { name: '西藏', value: 100000 },
-                    { name: '云南', value: 176 },
-                    { name: '贵州', value: 146 },
-                    { name: '四川', value: 543 },
-                    { name: '重庆', value: 576 },
-                    { name: '海南', value: 168 },
-                    { name: '广西', value: 254 },
-                    { name: '广东', value: 1407 },
-                    { name: '湖南', value: 1018 },
-                    { name: '湖北', value: 67800 },
-                    { name: '河南', value: 1273 },
-                    { name: '山东', value: 765 },
-                    { name: '江西', value: 936 },
-                    { name: '福建', value: 307 },
-                    { name: '安徽', value: 990 },
-                    { name: '浙江', value: 1237 },
-                    { name: '江苏', value: 633 },
-                    { name: '上海', value: 394 },
-                    { name: '黑龙江', value: 484 },
-                    { name: '吉林', value: 93 },
-                    { name: '辽宁', value: 126 },
-                    { name: '内蒙古', value: 75 },
-                    { name: '山西', value: 133 },
-                    { name: '河北', value: 319 },
-                    { name: '天津', value: 137 },
-                    { name: '北京', value: 512 }
+                    {name: '澳门', value: 18},
+                    {name: '香港', value: 273},
+                    {name: '台湾', value: 153},
+                    {name: '新疆', value: 76},
+                    {name: '宁夏', value: 75},
+                    {name: '青海', value: 18},
+                    {name: '甘肃', value: 134},
+                    {name: '陕西', value: 248},
+                    {name: '西藏', value: 100000},
+                    {name: '云南', value: 176},
+                    {name: '贵州', value: 146},
+                    {name: '四川', value: 543},
+                    {name: '重庆', value: 576},
+                    {name: '海南', value: 168},
+                    {name: '广西', value: 254},
+                    {name: '广东', value: 1407},
+                    {name: '湖南', value: 1018},
+                    {name: '湖北', value: 67800},
+                    {name: '河南', value: 1273},
+                    {name: '山东', value: 765},
+                    {name: '江西', value: 936},
+                    {name: '福建', value: 307},
+                    {name: '安徽', value: 990},
+                    {name: '浙江', value: 1237},
+                    {name: '江苏', value: 633},
+                    {name: '上海', value: 394},
+                    {name: '黑龙江', value: 484},
+                    {name: '吉林', value: 93},
+                    {name: '辽宁', value: 126},
+                    {name: '内蒙古', value: 75},
+                    {name: '山西', value: 133},
+                    {name: '河北', value: 319},
+                    {name: '天津', value: 137},
+                    {name: '北京', value: 512}
                 ];
                 option = {
                     tooltip: {
@@ -284,7 +321,6 @@
                     }]
                 };
                 ditu.setOption(option);
-
 
 
                 // this.map=new ol.Map({
@@ -423,11 +459,11 @@
                 zhexiantu.setOption(option);
             },
 
-            relitu(){
+            relitu() {
                 //高峰图
                 var relitu = echarts.init(document.getElementById('relitu'));
-                 window.addEventListener('resize', function () {
-                     relitu.resize();
+                window.addEventListener('resize', function () {
+                    relitu.resize();
                 });
                 var geoCoordMap = {
                     "海门": [121.15, 31.89],
@@ -624,767 +660,12 @@
 
                 var dataList = [{
                     name: "海门",
-                    value: 100
+                    value: 1000000
                 },
-                    {
-                        name: "鄂尔多斯",
-                        value: 112
-                    },
-                    {
-                        name: "招远",
-                        value: 112
-                    },
-                    {
-                        name: "舟山",
-                        value: 112
-                    },
-                    {
-                        name: "齐齐哈尔",
-                        value: 114
-                    },
-                    {
-                        name: "盐城",
-                        value: 100
-                    },
-                    {
-                        name: "赤峰",
-                        value: 16
-                    },
-                    {
-                        name: "青岛",
-                        value: 450
-                    },
-                    {
-                        name: "乳山",
-                        value: 118
-                    },
-                    {
-                        name: "金昌",
-                        value: 119
-                    },
-                    {
-                        name: "泉州",
-                        value: 21
-                    },
-                    {
-                        name: "莱西",
-                        value: 300
-                    },
-                    {
-                        name: "日照",
-                        value: 121
-                    },
-                    {
-                        name: "胶南",
-                        value: 125
-                    },
-                    {
-                        name: "南通",
-                        value: 23
-                    },
-                    {
-                        name: "拉萨",
-                        value: 321
-                    },
-                    {
-                        name: "云浮",
-                        value: 444
-                    },
-                    {
-                        name: "梅州",
-                        value: 25
-                    },
-                    {
-                        name: "文登",
-                        value: 456
-                    },
-                    {
-                        name: "上海",
-                        value: 125
-                    },
-                    {
-                        name: "攀枝花",
-                        value: 125
-                    },
-                    {
-                        name: "威海",
-                        value: 25
-                    },
-                    {
-                        name: "承德",
-                        value: 25
-                    },
-                    {
-                        name: "厦门",
-                        value: 126
-                    },
-                    {
-                        name: "汕尾",
-                        value: 26
-                    },
-                    {
-                        name: "潮州",
-                        value: 247
-                    },
-                    {
-                        name: "丹东",
-                        value: 227
-                    },
-                    {
-                        name: "太仓",
-                        value: 427
-                    },
-                    {
-                        name: "曲靖",
-                        value: 327
-                    },
-                    {
-                        name: "烟台",
-                        value: 28
-                    },
-                    {
-                        name: "福州",
-                        value: 29
-                    },
-                    {
-                        name: "瓦房店",
-                        value: 30
-                    },
-                    {
-                        name: "即墨",
-                        value: 30
-                    },
-                    {
-                        name: "抚顺",
-                        value: 31
-                    },
-                    {
-                        name: "玉溪",
-                        value: 31
-                    },
-                    {
-                        name: "张家口",
-                        value: 31
-                    },
-                    {
-                        name: "阳泉",
-                        value: 31
-                    },
-                    {
-                        name: "莱州",
-                        value: 32
-                    },
-                    {
-                        name: "湖州",
-                        value: 32
-                    },
-                    {
-                        name: "汕头",
-                        value: 32
-                    },
-                    {
-                        name: "昆山",
-                        value: 33
-                    },
-                    {
-                        name: "宁波",
-                        value: 33
-                    },
-                    {
-                        name: "湛江",
-                        value: 33
-                    },
-                    {
-                        name: "揭阳",
-                        value: 34
-                    },
-                    {
-                        name: "荣成",
-                        value: 34
-                    },
-                    {
-                        name: "连云港",
-                        value: 35
-                    },
-                    {
-                        name: "葫芦岛",
-                        value: 35
-                    },
-                    {
-                        name: "常熟",
-                        value: 236
-                    },
-                    {
-                        name: "东莞",
-                        value: 336
-                    },
-                    {
-                        name: "河源",
-                        value: 36
-                    },
-                    {
-                        name: "淮安",
-                        value: 436
-                    },
-                    {
-                        name: "泰州",
-                        value: 236
-                    },
-                    {
-                        name: "南宁",
-                        value: 437
-                    },
-                    {
-                        name: "营口",
-                        value: 37
-                    },
-                    {
-                        name: "惠州",
-                        value: 337
-                    },
-                    {
-                        name: "江阴",
-                        value: 37
-                    },
-                    {
-                        name: "蓬莱",
-                        value: 37
-                    },
-                    {
-                        name: "韶关",
-                        value: 38
-                    },
-                    {
-                        name: "嘉峪关",
-                        value: 38
-                    },
-                    {
-                        name: "广州",
-                        value: 138
-                    },
-                    {
-                        name: "延安",
-                        value: 138
-                    },
-                    {
-                        name: "太原",
-                        value: 139
-                    },
-                    {
-                        name: "清远",
-                        value: 139
-                    },
-                    {
-                        name: "中山",
-                        value: 139
-                    },
-                    {
-                        name: "昆明",
-                        value: 139
-                    },
-                    {
-                        name: "寿光",
-                        value: 440
-                    },
-                    {
-                        name: "盘锦",
-                        value: 40
-                    },
-                    {
-                        name: "长治",
-                        value: 41
-                    },
-                    {
-                        name: "深圳",
-                        value: 41
-                    },
-                    {
-                        name: "珠海",
-                        value: 42
-                    },
-                    {
-                        name: "宿迁",
-                        value: 43
-                    },
-                    {
-                        name: "咸阳",
-                        value: 43
-                    },
-                    {
-                        name: "铜川",
-                        value: 44
-                    },
-                    {
-                        name: "平度",
-                        value: 44
-                    },
-                    {
-                        name: "佛山",
-                        value: 44
-                    },
-                    {
-                        name: "海口",
-                        value: 44
-                    },
-                    {
-                        name: "江门",
-                        value: 45
-                    },
-                    {
-                        name: "章丘",
-                        value: 45
-                    },
-                    {
-                        name: "肇庆",
-                        value: 46
-                    },
-                    {
-                        name: "大连",
-                        value: 47
-                    },
-                    {
-                        name: "临汾",
-                        value: 47
-                    },
-                    {
-                        name: "吴江",
-                        value: 47
-                    },
-                    {
-                        name: "石嘴山",
-                        value: 49
-                    },
-                    {
-                        name: "沈阳",
-                        value: 50
-                    },
-                    {
-                        name: "苏州",
-                        value: 50
-                    },
-                    {
-                        name: "茂名",
-                        value: 50
-                    },
-                    {
-                        name: "嘉兴",
-                        value: 51
-                    },
-                    {
-                        name: "长春",
-                        value: 51
-                    },
-                    {
-                        name: "胶州",
-                        value: 52
-                    },
-                    {
-                        name: "银川",
-                        value: 52
-                    },
-                    {
-                        name: "张家港",
-                        value: 52
-                    },
-                    {
-                        name: "三门峡",
-                        value: 53
-                    },
-                    {
-                        name: "锦州",
-                        value: 154
-                    },
-                    {
-                        name: "南昌",
-                        value: 154
-                    },
-                    {
-                        name: "柳州",
-                        value: 154
-                    },
-                    {
-                        name: "三亚",
-                        value: 154
-                    },
-                    {
-                        name: "自贡",
-                        value: 156
-                    },
-                    {
-                        name: "吉林",
-                        value: 156
-                    },
-                    {
-                        name: "阳江",
-                        value: 257
-                    },
-                    {
-                        name: "泸州",
-                        value: 157
-                    },
-                    {
-                        name: "西宁",
-                        value: 157
-                    },
-                    {
-                        name: "宜宾",
-                        value: 258
-                    },
-                    {
-                        name: "呼和浩特",
-                        value: 58
-                    },
-                    {
-                        name: "成都",
-                        value: 58
-                    },
-                    {
-                        name: "大同",
-                        value: 58
-                    },
-                    {
-                        name: "镇江",
-                        value: 59
-                    },
-                    {
-                        name: "桂林",
-                        value: 59
-                    },
-                    {
-                        name: "张家界",
-                        value: 59
-                    },
-                    {
-                        name: "宜兴",
-                        value: 59
-                    },
-                    {
-                        name: "北海",
-                        value: 60
-                    },
-                    {
-                        name: "西安",
-                        value: 61
-                    },
-                    {
-                        name: "金坛",
-                        value: 62
-                    },
-                    {
-                        name: "东营",
-                        value: 62
-                    },
-                    {
-                        name: "牡丹江",
-                        value: 63
-                    },
-                    {
-                        name: "遵义",
-                        value: 63
-                    },
-                    {
-                        name: "绍兴",
-                        value: 63
-                    },
-                    {
-                        name: "扬州",
-                        value: 64
-                    },
-                    {
-                        name: "常州",
-                        value: 64
-                    },
-                    {
-                        name: "潍坊",
-                        value: 65
-                    },
-                    {
-                        name: "重庆",
-                        value: 66
-                    },
-                    {
-                        name: "台州",
-                        value: 67
-                    },
-                    {
-                        name: "南京",
-                        value: 67
-                    },
-                    {
-                        name: "滨州",
-                        value: 70
-                    },
-                    {
-                        name: "贵阳",
-                        value: 71
-                    },
-                    {
-                        name: "无锡",
-                        value: 71
-                    },
-                    {
-                        name: "本溪",
-                        value: 71
-                    },
-                    {
-                        name: "克拉玛依",
-                        value: 72
-                    },
-                    {
-                        name: "渭南",
-                        value: 72
-                    },
-                    {
-                        name: "马鞍山",
-                        value: 72
-                    },
-                    {
-                        name: "宝鸡",
-                        value: 72
-                    },
-                    {
-                        name: "焦作",
-                        value: 75
-                    },
-                    {
-                        name: "句容",
-                        value: 75
-                    },
-                    {
-                        name: "北京",
-                        value: 79
-                    },
-                    {
-                        name: "徐州",
-                        value: 79
-                    },
-                    {
-                        name: "衡水",
-                        value: 80
-                    },
-                    {
-                        name: "包头",
-                        value: 80
-                    },
-                    {
-                        name: "绵阳",
-                        value: 80
-                    },
-                    {
-                        name: "乌鲁木齐",
-                        value: 84
-                    },
-                    {
-                        name: "枣庄",
-                        value: 84
-                    },
-                    {
-                        name: "杭州",
-                        value: 84
-                    },
-                    {
-                        name: "淄博",
-                        value: 85
-                    },
-                    {
-                        name: "鞍山",
-                        value: 86
-                    },
-                    {
-                        name: "溧阳",
-                        value: 86
-                    },
-                    {
-                        name: "库尔勒",
-                        value: 86
-                    },
-                    {
-                        name: "安阳",
-                        value: 190
-                    },
-                    {
-                        name: "开封",
-                        value: 390
-                    },
-                    {
-                        name: "济南",
-                        value: 292
-                    },
-                    {
-                        name: "德阳",
-                        value: 393
-                    },
-                    {
-                        name: "温州",
-                        value: 95
-                    },
-                    {
-                        name: "九江",
-                        value: 96
-                    },
-                    {
-                        name: "邯郸",
-                        value: 98
-                    },
-                    {
-                        name: "临安",
-                        value: 99
-                    },
-                    {
-                        name: "兰州",
-                        value: 99
-                    },
-                    {
-                        name: "沧州",
-                        value: 100
-                    },
-                    {
-                        name: "临沂",
-                        value: 103
-                    },
-                    {
-                        name: "南充",
-                        value: 104
-                    },
-                    {
-                        name: "天津",
-                        value: 105
-                    },
-                    {
-                        name: "富阳",
-                        value: 106
-                    },
-                    {
-                        name: "泰安",
-                        value: 112
-                    },
-                    {
-                        name: "诸暨",
-                        value: 112
-                    },
-                    {
-                        name: "郑州",
-                        value: 113
-                    },
-                    {
-                        name: "哈尔滨",
-                        value: 114
-                    },
-                    {
-                        name: "聊城",
-                        value: 116
-                    },
-                    {
-                        name: "芜湖",
-                        value: 117
-                    },
-                    {
-                        name: "唐山",
-                        value: 119
-                    },
-                    {
-                        name: "平顶山",
-                        value: 119
-                    },
-                    {
-                        name: "邢台",
-                        value: 119
-                    },
-                    {
-                        name: "德州",
-                        value: 120
-                    },
-                    {
-                        name: "济宁",
-                        value: 120
-                    },
-                    {
-                        name: "荆州",
-                        value: 127
-                    },
-                    {
-                        name: "宜昌",
-                        value: 130
-                    },
-                    {
-                        name: "义乌",
-                        value: 132
-                    },
-                    {
-                        name: "丽水",
-                        value: 133
-                    },
-                    {
-                        name: "洛阳",
-                        value: 134
-                    },
-                    {
-                        name: "秦皇岛",
-                        value: 136
-                    },
-                    {
-                        name: "株洲",
-                        value: 143
-                    },
-                    {
-                        name: "石家庄",
-                        value: 147
-                    },
-                    {
-                        name: "莱芜",
-                        value: 148
-                    },
-                    {
-                        name: "常德",
-                        value: 152
-                    },
-                    {
-                        name: "保定",
-                        value: 153
-                    },
-                    {
-                        name: "湘潭",
-                        value: 154
-                    },
-                    {
-                        name: "金华",
-                        value: 157
-                    },
-                    {
-                        name: "岳阳",
-                        value: 169
-                    },
-                    {
-                        name: "长沙",
-                        value: 175
-                    },
-                    {
-                        name: "衢州",
-                        value: 177
-                    },
-                    {
-                        name: "廊坊",
-                        value: 193
-                    },
-                    {
-                        name: "菏泽",
-                        value: 194
-                    },
-                    {
-                        name: "合肥",
-                        value: 229
-                    },
-                    {
-                        name: "武汉",
-                        value: 273
-                    },
-                    {
-                        name: "大庆",
-                        value: 279
-                    }
+
                 ];
 
-                var convertData = function(data) {
+                var convertData = function (data) {
                     var res = [];
                     for (var i = 0; i < data.length; i++) {
                         var geoCoord = geoCoordMap[data[i].name];
@@ -1402,10 +683,10 @@
                         sublink: 'http://www.pm25.in',
                         left: 'center',
                         textStyle: {
-                            color: '#fff'
+                                color: '#212a31'
                         }
                     },
-                    backgroundColor: '#404a59',
+                    // backgroundColor: '¥',
                     visualMap: {
                         show: false,
                         min: 0,
@@ -1415,7 +696,7 @@
                             color: ['#d94e5d', '#eac736', '#50a3ba'].reverse()
                         },
                         textStyle: {
-                            color: '#fff'
+                            color: '#212a31'
                         },
 
                     },
@@ -1424,13 +705,13 @@
                         label: {
                             emphasis: {
                                 show: true,
-                                color: '#fff'
+                                color: '#cdddf7'
                             }
                         },
                         roam: true,
                         itemStyle: {
                             normal: {
-                                areaColor: '#323c48',
+                                areaColor: '#212a31',
                                 borderColor: '#111'
                             },
                             emphasis: {
@@ -1645,25 +926,25 @@
 
             },
 
-            dynamic_data_get () {
+            dynamic_data_get() {
                 var app = {};
-                var dynamic_data=echarts.init(document.getElementById('dynamic_data'));
+                var dynamic_data = echarts.init(document.getElementById('dynamic_data'));
                 window.addEventListener('resize', function () {
                     dynamic_data.resize();
                 });
                 let categories = []
-                let categories2 =[];
-                let dynamicdata=[]
-                let  linedata=[]
+                let categories2 = [];
+                let dynamicdata = []
+                let linedata = []
                 axios.get('http://127.0.0.1:9001/data').then(response => {
                     console.log(response.data.date)
-                    categories= response.data.date;
-                    categories2=response.data.num;
-                    dynamicdata=response.data.bar;
-                    linedata=response.data.line;
+                    categories = response.data.date;
+                    categories2 = response.data.num;
+                    dynamicdata = response.data.bar;
+                    linedata = response.data.line;
                 })
                 option = {
-                    grid:{
+                    grid: {
                         top: '20%',
                         bottom: '20%',
                     },
@@ -1773,168 +1054,11 @@
 
 </script>
 
-<!--<script src="https://unpkg.com/vue"></script>-->
-<!-- <script src="https://unpkg.com/element-ui/lib/index.js"></script> -->
-<!-- 已添加 -->
- <!-- <script type="text/javascript">
-    // 基于准备好的dom，初始化echarts实例
 
-    var zhexiantu = echarts.init(document.getElementById('zhexiantu'));
-    window.addEventListener('resize', function () {
-        zhexiantu.resize();
-        // myCharts.resize();
-    });
-    var color = ['#bb80d9', '#b5ee66'];
-    var option = {
-
-        color: color,
-        tooltip: {
-            trigger: 'none',
-            axisPointer: {
-                type: 'cross'
-            }
-        },
-        legend: {},
-        grid: {
-            top: '10%',
-            bottom: '25%',
-        },
-        xAxis: [
-            {
-                type: 'category',
-                axisTick: {
-                    alignWithLabel: true
-                },
-                axisLine: {
-                    onZero: false,
-                    lineStyle: {
-                        color: colors[1]
-                    }
-                },
-                axisPointer: {
-                    label: {
-                        formatter: function (params) {
-                            return (
-                                'Precipitation  ' +
-                                params.value +
-                                (params.seriesData.length ? '：' + params.seriesData[0].data : '')
-                            );
-                        }
-                    }
-                },
-                // prettier-ignore
-                data: ['2016-1', '2016-2', '2016-3', '2016-4', '2016-5', '2016-6', '2016-7', '2016-8', '2016-9', '2016-10', '2016-11', '2016-12']
-            },
-            {
-                type: 'category',
-                axisTick: {
-                    alignWithLabel: true
-                },
-                axisLine: {
-                    onZero: false,
-                    lineStyle: {
-                        color: colors[0]
-                    }
-                },
-                axisPointer: {
-                    label: {
-                        formatter: function (params) {
-                            return (
-                                'Precipitation  ' +
-                                params.value +
-                                (params.seriesData.length ? '：' + params.seriesData[0].data : '')
-                            );
-                        }
-                    }
-                },
-                // prettier-ignore
-                data: ['2015-1', '2015-2', '2015-3', '2015-4', '2015-5', '2015-6', '2015-7', '2015-8', '2015-9', '2015-10', '2015-11', '2015-12']
-            }
-        ],
-        yAxis: [
-            {
-                type: 'value'
-            }
-        ],
-        series: [
-            {
-                // name: 'Precipitation(2015)',
-
-                type: 'line',
-                xAxisIndex: 1,
-                smooth: true,
-                // label:{
-                //     show: true,
-                //     position:"top",
-                //     color: '#ff0000'
-                //
-                // },
-                emphasis: {
-                    focus: 'series'
-                },
-                data: [
-                    2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3
-                ]
-            },
-            {
-                // name: 'Precipitation(2016)',
-                type: 'line',
-                smooth: true,
-                emphasis: {
-                    focus: 'series'
-                },
-                data: [
-                    3.9, 5.9, 11.1, 18.7, 48.3, 69.2, 231.6, 46.6, 55.4, 18.4, 10.3, 0.7
-                ]
-            }
-        ]
-    };
-    zhexiantu.setOption(option);
-</script>  -->
-
-<!-- <script>
-    // export default {
-    //     data() {
-    //         return {
-    //             pickerOptions: {
-    //                 disabledDate(time) {
-    //                     return time.getTime() > Date.now();
-    //                 },
-    //                 shortcuts: [{
-    //                     text: '今天',
-    //                     onClick(picker) {
-    //                         picker.$emit('pick', new Date());
-    //                     }
-    //                 }, {
-    //                     text: '昨天',
-    //                     onClick(picker) {
-    //                         const date = new Date();
-    //                         date.setTime(date.getTime() - 3600 * 1000 * 24);
-    //                         picker.$emit('pick', date);
-    //                     }
-    //                 }, {
-    //                     text: '一周前',
-    //                     onClick(picker) {
-    //                         const date = new Date();
-    //                         date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-    //                         picker.$emit('pick', date);
-    //                     }
-    //                 }]
-    //             },
-    //             value1: '',
-    //             value2: '',
-    //         };
-    //     }
-    // };
-</script> -->
-
-<!--//对比折线图-->
-
-
-<script src="https://www.jq22.com/jquery/jquery-1.10.2.js"></script>
-<script type="text/javascript" src="js/layer/layer.min.js"></script>
+<script src="js/jquery-3.3.1.min.js"></script>
+<!--<script type="text/javascript" src="js/layer/layer.min.js"></script>-->
 <script type="text/javascript" src="js/layer/laydate/laydate.js"></script>
-<script src="https://www.jq22.com/jquery/echarts-4.2.1.min.js"></script>
+<!--<script src="https://www.jq22.com/jquery/echarts-4.2.1.min.js"></script>-->
 <script type="text/javascript" src="js/china.js"></script>
 <script type="text/javascript" src="js/base.js"></script>
 <script type="text/javascript">
@@ -1988,7 +1112,6 @@
         })
     })
 </script>
-
 
 
 </html>
