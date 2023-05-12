@@ -13,13 +13,13 @@
 
 <div id="app">
     <template>
-<!--        <div>-->
-<!--            <ul>-->
-<!--                <li v-for="item in items">-->
-<!--                    {{ item.name }}-->
-<!--                </li>-->
-<!--            </ul>-->
-<!--        </div>-->
+        <!--        <div>-->
+        <!--            <ul>-->
+        <!--                <li v-for="item in items">-->
+        <!--                    {{ item.name }}-->
+        <!--                </li>-->
+        <!--            </ul>-->
+        <!--        </div>-->
         <div class="chart-box">
             <div id="dynamic_data" style="width:1400px;height:500px;"></div>
 
@@ -32,41 +32,14 @@
 <script>
     new Vue({
         el: '#app',
-        data() {
-            return {
-                // categories:[],
-                categories2:[],
-                dynamic_data1:[],
-                dynamic_data2:[],
-                message: '',
-            };
-        },
         mounted() {
-
-            // this.initdate()
-            // 每2秒钟调用一次updateMessage方法
             this.dynamic_data_get()
-            // this.intervalId = setInterval(this.dynamic_data_get,1000);
-        },
-        created() {
-            // this.dynamic_data_get();
         },
         beforeDestroy() {
             // 清理定时器
             clearInterval(this.intervalId);
         },
         methods: {
-
-            // initdate () {
-            //     axios.get('http://127.0.0.1:9001/data').then(response => {
-            //         console.log(response.data)
-            //         this.categories = response.data
-            //     })
-            // },
-            init() {
-                // 执行初始化方法
-                this.message = 'Hello, World!';
-            },
             dynamic_data_get () {
                 var app = {};
 
@@ -77,45 +50,15 @@
                 });
                 let categories = []
                 let categories2 =[];
+                let dynamicdata=[]
+                let  linedata=[]
                 axios.get('http://127.0.0.1:9001/data').then(response => {
                         console.log(response.data.date)
                         categories= response.data.date;
-                    categories2=response.data.num;
+                        categories2=response.data.num;
+                    dynamicdata=response.data.bar;
+                    linedata=response.data.line;
                     })
-
-                    // console.log(categories)
-
-
-
-
-                // const categories2 = (function () {
-                //     let res = [];
-                //     let len = 10;
-                //     while (len--) {
-                //         res.push(10 - len - 1);
-                //     }
-                //     // console.log(res)
-                //     return res;
-                // })();
-                const dynamicdata = (function () {
-                    let res = [];
-                    let len = 10;
-                    while (len--) {
-                        res.push(Math.round(Math.random() * 1000));
-                    }
-                    console.log(res)
-                    return res;
-                })();
-                const data2 = (function () {
-                    let res = [];
-                    let len = 0;
-                    while (len < 10) {
-                        res.push(+(Math.random() * 10 + 5).toFixed(1));
-                        len++;
-                    }
-                    console.log(res)
-                    return res;
-                })();
                 option = {
                     grid:{
                         top: '20%',
@@ -181,21 +124,25 @@
                         {
                             // name: 'Dynamic Line',
                             type: 'line',
-                            data: data2
+                            data: linedata
                         }
                     ]
                 };
                 app.count = 11;
                 setInterval(function () {
                     let axisData = new Date().toLocaleTimeString().replace(/^\D*/, '');
-                    dynamicdata.shift();
-                    dynamicdata.push(Math.round(Math.random() * 1000));
-                    data2.shift();
-                    data2.push(+(Math.random() * 10 + 5).toFixed(1));
-                    categories.shift();
-                    categories.push(axisData);
-                    categories2.shift();
-                    categories2.push(app.count++);
+
+                    axios.get('http://127.0.0.1:9001/data2').then(response => {
+                        console.log(response.data.date)
+                        dynamicdata.shift();
+                        dynamicdata.push(response.data.bar);
+                        linedata.shift();
+                        linedata.push(response.data.line);
+                        categories.shift();
+                        categories.push(response.data.date);
+                        categories2.shift();
+                        categories2.push(app.count++);
+                    })
                     dynamic_data.setOption({
                         xAxis: [
                             {
@@ -210,7 +157,7 @@
                                 data: dynamicdata
                             },
                             {
-                                data: data2
+                                data: linedata
                             }
                         ]
                     });
@@ -223,92 +170,245 @@
 </script>
 
 <script>
-
-
+    // // 基于准备好的dom，初始化echarts实例
+    // new Vue({
+    //     el: '#app',
+    //     mounted() {
+    //
+    //         // this.initdate()
+    //         // 每2秒钟调用一次updateMessage方法
+    //         this.liuliang_data()
+    //         // this.intervalId = setInterval(this.dynamic_data_get,1000);
+    //     },
+    //     beforeDestroy() {
+    //         // 清理定时器
+    //         clearInterval(this.intervalId);
+    //     },
+    //     methods: {
+    //         liuliang_data() {
+    //             // var app = {};?
+    //             var liuliangtu = echarts.init(document.getElementById('liuliangtu'));
+    //             window.addEventListener('resize', function () {
+    //                 liuliangtu.resize();
+    //             });
+    //             let date = [];
+    //             let data = [];
+    //             axios.get('http://127.0.0.1:9001/liuliang').then(response => {
+    //                 console.log(response.data)
+    //                 date = response.data.date
+    //                 data = response.data.lenthg
+    //
+    //                 var option = {
+    //                     grid: {
+    //                         top: '10%',
+    //                         // bottom: '20%' // 距离底部的距离为容器高度的 20%
+    //                     },
+    //                     tooltip: {
+    //                         trigger: 'axis',
+    //                         position: function (pt) {
+    //                             return [pt[0], '0%'];
+    //                         }
+    //                     },
+    //                     // title: {
+    //                     //     left: 'center',
+    //                     //     text: 'Large Area Chart'
+    //                     // },
+    //                     xAxis: {
+    //                         type: 'category',
+    //                         boundaryGap: false,
+    //                         data: date
+    //                     },
+    //                     yAxis: {
+    //                         type: 'value',
+    //                         boundaryGap: [0, '20%']
+    //                     },
+    //                     dataZoom: [
+    //                         {
+    //                             type: 'slider',
+    //                             start: 0,
+    //                             end: 10
+    //                         },
+    //
+    //                     ],
+    //                     series: [
+    //                         {
+    //                             name: 'Fake Data',
+    //                             type: 'line',
+    //                             symbol: 'none',
+    //                             sampling: 'lttb',
+    //                             itemStyle: {
+    //                                 color: 'rgb(255, 70, 131)'
+    //                             },
+    //                             areaStyle: {
+    //                                 color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+    //                                     {
+    //                                         offset: 0,
+    //                                         color: 'rgb(255, 158, 68)'
+    //                                     },
+    //                                     {
+    //                                         offset: 1,
+    //                                         color: 'rgb(255, 70, 131)'
+    //                                     }
+    //                                 ])
+    //                             },
+    //                             data: data
+    //                         }
+    //                     ]
+    //                 };
+    //
+    //                 // 使用刚指定的配置项和数据显示图表。
+    //                 liuliangtu.setOption(option);
+    //
+    //             })
+    //
+    //         },
+    //     },
+    // });
 </script>
 
 
-<!--<script type="text/javascript">-->
-<!--    // 基于准备好的dom，初始化echarts实例-->
-<!--    var liuliangtu = echarts.init(document.getElementById('liuliangtu'));-->
-<!--    window.addEventListener('resize', function () {-->
-<!--        liuliangtu.resize();-->
-<!--// myCharts.resize();-->
-<!--    });-->
-<!--    let base = +new Date(1968, 9, 3);-->
-<!--    let oneDay = 24 * 3600 * 1000;-->
-<!--    let date = [];-->
-<!--    let data = [Math.random() * 300];-->
-<!--    for (let i = 1; i < 2000; i++) {-->
-<!--        var now = new Date((base += oneDay));-->
-<!--        date.push([now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'));-->
-<!--        data.push(Math.round((Math.random() - 0.5) * 20 + data[i - 1]));-->
-<!--    }-->
-<!--    console.log(date)-->
-<!--    console.log(data)-->
-<!--    var option = {-->
-<!--        grid: {-->
-<!--            top: '10%',-->
-<!--// bottom: '20%' // 距离底部的距离为容器高度的 20%-->
-<!--        },-->
-<!--        tooltip: {-->
-<!--            trigger: 'axis',-->
-<!--            position: function (pt) {-->
-<!--                return [pt[0], '0%'];-->
-<!--            }-->
-<!--        },-->
-<!--// title: {-->
-<!--//     left: 'center',-->
-<!--//     text: 'Large Area Chart'-->
-<!--// },-->
-<!--        xAxis: {-->
-<!--            type: 'category',-->
-<!--            boundaryGap: false,-->
-<!--            data: date-->
-<!--        },-->
-<!--        yAxis: {-->
-<!--            type: 'value',-->
-<!--            boundaryGap: [0, '20%']-->
-<!--        },-->
-<!--        dataZoom: [-->
-<!--            {-->
-<!--                type: 'slider',-->
-<!--                start: 0,-->
-<!--                end: 10-->
-<!--            },-->
-
-<!--        ],-->
-<!--        series: [-->
-<!--            {-->
-<!--                name: 'Fake Data',-->
-<!--                type: 'line',-->
-<!--                symbol: 'none',-->
-<!--                sampling: 'lttb',-->
-<!--                itemStyle: {-->
-<!--                    color: 'rgb(255, 70, 131)'-->
-<!--                },-->
-<!--                areaStyle: {-->
-<!--                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [-->
-<!--                        {-->
-<!--                            offset: 0,-->
-<!--                            color: 'rgb(255, 158, 68)'-->
-<!--                        },-->
-<!--                        {-->
-<!--                            offset: 1,-->
-<!--                            color: 'rgb(255, 70, 131)'-->
-<!--                        }-->
-<!--                    ])-->
-<!--                },-->
-<!--                data: data-->
-<!--            }-->
-<!--        ]-->
-<!--    };-->
-
-<!--    // 使用刚指定的配置项和数据显示图表。-->
-<!--    liuliangtu.setOption(option);-->
-
-<!--</script>-->
+<script type="text/javascript">
 
 
+
+//    new Vue({
+//        el: '#app',
+//        mounted() {
+//
+//            // this.initdate()
+//            // 每2秒钟调用一次updateMessage方法
+//            this.liuliang_data()
+//            // this.intervalId = setInterval(this.dynamic_data_get,1000);
+//        },
+//        beforeDestroy() {
+//            // 清理定时器
+//            clearInterval(this.intervalId);
+//        },
+//        methods: {
+//            liuliang_data() {
+//                var bingtu = echarts.init(document.getElementById('bingtu'));
+//                window.addEventListener('resize', function () {
+//                    gaofengtu.resize();
+//                });
+//
+//
+//                let guandian = [];
+//                let data2 = [];
+//                let data3 = [];
+//                let data4 = [];
+//                let data5 = [];
+//                axios.get('http://127.0.0.1:9001/fenlei').then(response => {
+//                    console.log(response.data)
+//                    console.log(response.data.guandian)
+//                    guandian = response.data.guandian
+//                    console.log(guandian)
+//                    data2 = response.data.difang
+//                    data3 = response.data.dangzheng
+//                    data4 = response.data.yaowen
+//                    data5 = response.data.qita
+//
+//
+//                    var option = {
+//
+//
+//                        tooltip: {
+//                            trigger: 'axis',
+//                            axisPointer: {
+//                                // Use axis to trigger tooltip
+//                                type: 'shadow' // 'shadow' as default; can also be 'line' or 'shadow'
+//                            }
+//                        },
+//                        legend: {},
+//                        grid: {
+//                            left: '3%',
+//                            right: '4%',
+//                            bottom: '3%',
+//                            containLabel: true
+//                        },
+//                        xAxis: {
+//                            type: 'value'
+//                        },
+//                        yAxis: {
+//                            type: 'category',
+//                            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+//                        },
+//                        series: [
+//                            {
+//                                name: '党政',
+//                                type: 'bar',
+//                                stack: 'total',
+//                                label: {
+//                                    show: true
+//                                },
+//                                emphasis: {
+//                                    focus: 'series'
+//                                },
+//                                data: data3
+//                            },
+//                            {
+//                                name: '观点',
+//                                type: 'bar',
+//                                stack: 'total',
+//                                label: {
+//                                    show: true
+//                                },
+//                                emphasis: {
+//                                    focus: 'series'
+//                                },
+//                                data: guandian
+//                            },
+//                            {
+//                                name: '要闻',
+//                                type: 'bar',
+//                                stack: 'total',
+//                                label: {
+//                                    show: true
+//                                },
+//                                emphasis: {
+//                                    focus: 'series'
+//                                },
+//                                data: data4
+//                            },
+//                            {
+//                                name: '地方',
+//                                type: 'bar',
+//                                stack: 'total',
+//                                label: {
+//                                    show: true
+//                                },
+//                                emphasis: {
+//                                    focus: 'series'
+//                                },
+//                                data: data2
+//                            },
+//                            {
+//                                name: '其他',
+//                                type: 'bar',
+//                                stack: 'total',
+//                                label: {
+//                                    show: true
+//                                },
+//                                emphasis: {
+//                                    focus: 'series'
+//                                },
+//                                data: data5
+//                            }
+//                        ]
+//                    };
+//
+//                    bingtu.setOption(option)
+//                })
+//
+//                console.log(guandian)
+//
+//
+//
+//
+//            },
+//        },
+//    });
+
+
+</script>
 </body>
 </html>
