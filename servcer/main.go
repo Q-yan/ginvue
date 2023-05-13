@@ -83,11 +83,16 @@ func main() {
 	engine := gin.Default()
 	engine.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT,DELETE, OPTIONS")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		c.Writer.Header().Set("Access-Control-Max-Age", "86400")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusOK)
+			return
+		}
 		c.Next()
 	})
+
 	//初始化动态折线图
 	engine.GET("/data", func(c *gin.Context) {
 
@@ -111,16 +116,16 @@ func main() {
 		c.JSON(http.StatusOK, items)
 	})
 
-	engine.GET("/data2", func(c *gin.Context) {
-		//fmt.Println(time.Now().Format("15:04:05"))
-		ite1 := ites{
-			Date: time.Now().Format("15:04:05"),
-			Bar:  rand.Intn(900),
-			Line: rand.Intn(30),
-		}
-		fmt.Println(ite1)
-		c.JSON(http.StatusOK, ite1)
-	})
+	//engine.GET("/data2", func(c *gin.Context) {
+	//	//fmt.Println(time.Now().Format("15:04:05"))
+	//	ite1 := ites{
+	//		Date: time.Now().Format("15:04:05"),
+	//		Bar:  rand.Intn(900),
+	//		Line: rand.Intn(30),
+	//	}
+	//	fmt.Println(ite1)
+	//	c.JSON(http.StatusOK, ite1)
+	//})
 
 	engine.GET("/liuliang", func(c *gin.Context) {
 		lls := liuliang{}
@@ -169,6 +174,11 @@ func main() {
 
 	})
 
+	type RequestData struct {
+		Start string `json:"start"`
+		End   string `json:"end"`
+	}
+
 	engine.POST("/duibi", func(c *gin.Context) {
 		//start :=c.PostForm("start")
 		//end:=c.PostForm("end")
@@ -182,36 +192,40 @@ func main() {
 
 	engine.POST("/relitu", func(c *gin.Context) {
 		appG := app.Gin{C: c}
+
+		var requestData *RequestData
 		var ips []string
 
-		var setime *startEnd
-		err := c.ShouldBindJSON(&setime)
+		//var setime *startEnd
+		err := c.ShouldBindJSON(&requestData)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
+
 		start_date := "2022-01-01 00:00:00"
 		end_date := "2023-01-01 00:00:00"
-		if setime != nil {
-			start_date = setime.StartDate
-			end_date = setime.EndDate
+		if requestData != nil {
+			start_date = requestData.Start
+			end_date = requestData.End
 		}
-		//err = db.MasterDB.Table("timeip").Cols("ip_address").Where("timestamp between ? and ?",
-		//	start_date, end_date).Find(&ips)
+		fmt.Println(end_date)
+		err = db.MasterDB.Table("timeip").Cols("ip_address").Where("timestamp between ? and ?",
+			start_date, end_date).Find(&ips)
 
-		var tcs []struct {
-			IpAddress string `json:"ip_address"`
-			Count     int    `json:"count"`
-		}
-		err = db.MasterDB.Table("timeip").Select("ip_address, count(*) as count").Where("timestamp between ? and ?",
-			start_date, end_date).GroupBy("ip_address").OrderBy("count").Find(&tcs)
+		//var tcs []struct {
+		//	IpAddress string `json:"ip_address"`
+		//	Count     int    `json:"count"`
+		//}
+		//err = db.MasterDB.Table("timeip").Select("ip_address, count(*) as count").Where("timestamp between ? and ?",
+		//	start_date, end_date).GroupBy("ip_address").OrderBy("count").Find(&tcs)
 
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		var jingweis []*jingweidus
+		var jingweis [][]float64
 		for _, ip := range ips {
 			if ip != "" {
 				jingweidu := ip2eo(ip)
