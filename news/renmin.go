@@ -2,39 +2,25 @@ package main
 
 import (
 	"fmt"
+	"github.com/oschwald/geoip2-golang"
 	"log"
-	"net/http"
-
-	"github.com/PuerkitoBio/goquery"
+	"net"
 )
 
-func ExampleScrape() {
-	// Request the HTML page.
-	res, err := http.Get("http://www.people.com.cn/")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
-	}
-
-	// Load the HTML document
-	doc, err := goquery.NewDocumentFromReader(res.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Find the review items
-	doc.Find("div.layout section_main cf").Find("list2 cf").Each(func(i int, s *goquery.Selection) {
-		// For each item found, get the title
-		//title := s.Find("a").Text()
-		//fmt.Printf("Review %d: %s\n", i, title)
-		title := s.Find("a")
-		fmt.Printf("Review %d: %s\n", i, title)
-	})
-}
-
 func main() {
-	ExampleScrape()
+	db, err := geoip2.Open("news/GeoLite2-City.mmdb") // 替换为您的 IP 地理位置数据库文件路径
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	ip := net.ParseIP("118.144.72.252") // 替换为您要转换的 IP 地址
+
+	record, err := db.City(ip)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	province := record.Subdivisions[0].Names["zh-CN"] // 根据具体的语言选择对应的字段
+	fmt.Println("省份:", province)
 }

@@ -1,57 +1,26 @@
-package main
+package db
 
 import (
-	"database/sql"
-	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	//"github.com/xormplus/core"
+	"github.com/xormplus/xorm"
+
+	"log"
 )
 
-func main() {
-	// 连接MySQL数据库
-	db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/testdata")
-	if err != nil {
-		panic(err.Error())
-	}
-	defer db.Close()
+var MasterDB *xorm.Engine
 
-	// 创建表格
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS users (id INT NOT NULL AUTO_INCREMENT, name VARCHAR(50) NOT NULL, age INT NOT NULL, PRIMARY KEY (id))")
+// Setup initializes the database instance
+func Setup() {
+	var err error
+
+	MasterDB, err = xorm.NewEngine("mysql", "root:123456@tcp(localhost)/testdata?charset=utf8mb4&collation=utf8mb4_unicode_ci&parseTime=True&loc=Local")
+
 	if err != nil {
-		panic(err.Error())
+		log.Fatalf("models.Setup err: %v", err)
 	}
 
-	// 插入数据
-	stmt, err := db.Prepare("INSERT INTO users(name, age) VALUES (?, ?)")
-	if err != nil {
-		panic(err.Error())
-	}
-	defer stmt.Close()
+	MasterDB.SetMaxIdleConns(3)
+	MasterDB.SetMaxOpenConns(15)
 
-	_, err = stmt.Exec("Tom", 25)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	_, err = stmt.Exec("Jerry", 28)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	// 查询数据
-	rows, err := db.Query("SELECT id, name, age FROM users")
-	if err != nil {
-		panic(err.Error())
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var id int
-		var name string
-		var age int
-		err := rows.Scan(&id, &name, &age)
-		if err != nil {
-			panic(err.Error())
-		}
-		fmt.Printf("ID: %d, Name: %s, Age: %d\n", id, name, age)
-	}
 }

@@ -2,11 +2,17 @@ package main
 
 import (
 	"fmt"
+	"ginvue/app"
+	"ginvue/db"
 	"github.com/gin-gonic/gin"
 	"math/rand"
 	"net/http"
 	"time"
 )
+
+func init() {
+	db.Setup()
+}
 
 // 处理跨域请求,支持options访问
 func Cors() gin.HandlerFunc {
@@ -58,11 +64,6 @@ type fenlei_data struct {
 	Qita      []int `json:"qita"`
 }
 
-type start_end_time struct {
-	Start string `json:"start"`
-	End   string `json:"end"`
-}
-
 func reverseArray(arr []int) {
 	left := 0
 	right := len(arr) - 1
@@ -71,6 +72,11 @@ func reverseArray(arr []int) {
 		left++
 		right--
 	}
+}
+
+type startEnd struct {
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
 }
 
 func main() {
@@ -173,6 +179,49 @@ func main() {
 		//web_logs.filter((col("timestamp") >= start_time) & (col("timestamp") <= end_time)).agg(count("*").alias("count")).show()
 
 	})
+
+	engine.POST("/relitu", func(c *gin.Context) {
+		appG := app.Gin{C: c}
+		var ips []string
+
+		var setime *startEnd
+		err := c.ShouldBindJSON(&setime)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		start_date := "2022-01-01 00:00:00"
+		end_date := "2023-01-01 00:00:00"
+		if setime != nil {
+			start_date = setime.StartDate
+			end_date = setime.EndDate
+		}
+		//err = db.MasterDB.Table("timeip").Cols("ip_address").Where("timestamp between ? and ?",
+		//	start_date, end_date).Find(&ips)
+
+		var tcs []struct {
+			IpAddress string `json:"ip_address"`
+			Count     int    `json:"count"`
+		}
+		err = db.MasterDB.Table("timeip").Select("ip_address, count(*) as count").Where("timestamp between ? and ?",
+			start_date, end_date).GroupBy("ip_address").OrderBy("count").Find(&tcs)
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		var jingweis []*jingweidus
+		for _, ip := range ips {
+			if ip != "" {
+				jingweidu := ip2eo(ip)
+				jingweis = append(jingweis, jingweidu)
+			}
+
+		}
+		appG.ResponseSucMsg(jingweis)
+	})
+	//ip2eo()
 
 	engine.Run(":9001")
 
