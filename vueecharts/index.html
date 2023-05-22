@@ -163,23 +163,6 @@
         // },
         data() {
             return {
-                options: [{
-                    value: '选项1',
-                    label: '黄金糕'
-                }, {
-                    value: '选项2',
-                    label: '双皮奶'
-                }, {
-                    value: '选项3',
-                    label: '蚵仔煎'
-                }, {
-                    value: '选项4',
-                    label: '龙须面'
-                }, {
-                    value: '选项5',
-                    label: '北京烤鸭'
-                }],
-
                 value1: '2022-01-01 00:00:00',
                 value2: '2022-05-02 00:00:00',
                 value3: '2022-01-01 00:00:00'
@@ -188,7 +171,7 @@
         mounted() {
             this.liuliang_data()
             this.type_data()
-            // this.dynamic_data_get()
+            this.dynamic_data_get()
             this.initCharts()
             this.renderMap()
             this.relitu()
@@ -260,27 +243,27 @@
                         text: ["高", "低"],
                         pieces: [{
                             gt: 10000,
-                            label: "> 10000人",
+                            label: "> 10000次",
                             color: "#7f1100"
                         }, {
                             gte: 1000,
                             lte: 10000,
-                            label: "1000 - 10000人",
+                            label: "1000 - 10000次",
                             color: "#ff5428"
                         }, {
                             gte: 100,
                             lt: 1000,
-                            label: "100 - 1000人",
+                            label: "100 - 1000次",
                             color: "#ff8c71"
                         }, {
                             gt: 10,
                             lt: 100,
-                            label: "10 - 100人",
+                            label: "10 - 100次",
                             color: "#ffd768"
                         }, {
                             gt: 1,
                             lt: 10,
-                            label: "1 - 10人",
+                            label: "1 - 10次",
                             color: "#ffffff"
                         }],
                         show: !0
@@ -316,7 +299,7 @@
                         }
                     },
                     series: [{
-                        name: "确诊病例",
+                        name: "访问次数",
                         type: "map",
                         geoIndex: 0,
                         data: window.dataList
@@ -326,6 +309,22 @@
             },
             //初始化图表
             initCharts() {
+
+
+                    axios.post('http://127.0.0.1:9001/duibi',{
+                        "start":this.value1,
+                        "end":this.value2
+                    },{
+                        "Content-Type":"application/json; charset=utf-8"
+                    })
+                        .then(response => {
+                            // 处理成功响应
+                            console.log(response.data);
+                        })
+                        .catch(error => {
+                            // 处理错误响应
+                            console.error(error);
+                        });
 
 
 
@@ -485,23 +484,11 @@
                             return res;
                         };
 
-                        // var convertData = function (data) {
-                        //     var res = [];
-                        //     for (var i = 0; i < data.length; i++) {
-                        //         var geoCoord = geoCoordMap[data[i].name];
-                        //         if (geoCoord) {
-                        //             res.push(geoCoord.concat(data[i].value));
-                        //         }
-                        //     }
-                        //     console.log(res)
-                        //     return res;
-                        // };
 
                         option = {
                             title: {
                                 text: '热力图',
                                 subtext: '',
-                                sublink: 'http://www.pm25.in',
                                 left: 'center',
                                 textStyle: {
                                     color: '#212a31'
@@ -573,10 +560,15 @@
                 });
                 let date = [];
                 let data = [];
-                axios.get('http://127.0.0.1:9001/liuliang').then(response => {
+                axios.post('http://127.0.0.1:9001/liuliang',{
+                    "start":this.value1,
+                    "end":this.value2
+                },{
+                    "Content-Type":"application/json; charset=utf-8"
+                }).then(response => {
                     console.log(response.data)
-                    date = response.data.date
-                    data = response.data.lenthg
+                    date = response.data.data.Times
+                    data = response.data.data.Lengths
 
                     var option = {
                         grid: {
@@ -589,10 +581,6 @@
                                 return [pt[0], '0%'];
                             }
                         },
-                        // title: {
-                        //     left: 'center',
-                        //     text: 'Large Area Chart'
-                        // },
                         xAxis: {
                             type: 'category',
                             boundaryGap: false,
@@ -612,7 +600,7 @@
                         ],
                         series: [
                             {
-                                name: 'Fake Data',
+                                name: '流量',
                                 type: 'line',
                                 symbol: 'none',
                                 sampling: 'lttb',
