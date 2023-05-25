@@ -2,11 +2,18 @@ package main
 
 import (
 	"fmt"
+	"ginvue/app"
+	"ginvue/db"
+	"ginvue/moudle"
 	"github.com/gin-gonic/gin"
 	"math/rand"
 	"net/http"
 	"time"
 )
+
+func init() {
+	db.Setup()
+}
 
 // 处理跨域请求,支持options访问
 func Cors() gin.HandlerFunc {
@@ -28,41 +35,6 @@ func Cors() gin.HandlerFunc {
 	}
 }
 
-type Item struct {
-	Date []string `json:"date"`
-	Num  []int    `json:"num"`
-	Bar  []int    `json:"bar"`
-	Line []int    `json:"line"`
-}
-
-type ites struct {
-	Date string `json:"date"`
-	Num  int    `json:"num"`
-	Bar  int    `json:"bar"`
-	Line int    `json:"line"`
-}
-
-type ll struct {
-}
-
-type liuliang struct {
-	Date   []string `json:"date"`
-	Length []int    `json:"lenthg"`
-}
-
-type fenlei_data struct {
-	Yaowen    []int `json:"yaowen"`
-	Dangzheng []int `json:"dangzheng"`
-	Guandian  []int `json:"guandian"`
-	Difang    []int `json:"difang"`
-	Qita      []int `json:"qita"`
-}
-
-type start_end_time struct {
-	Start string `json:"start"`
-	End   string `json:"end"`
-}
-
 func reverseArray(arr []int) {
 	left := 0
 	right := len(arr) - 1
@@ -77,15 +49,20 @@ func main() {
 	engine := gin.Default()
 	engine.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT,DELETE, OPTIONS")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		c.Writer.Header().Set("Access-Control-Max-Age", "86400")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusOK)
+			return
+		}
 		c.Next()
 	})
+
 	//初始化动态折线图
 	engine.GET("/data", func(c *gin.Context) {
 
-		items := Item{
+		items := moudle.Item{
 			Date: []string{},
 			Num:  []int{},
 		}
@@ -107,7 +84,7 @@ func main() {
 
 	engine.GET("/data2", func(c *gin.Context) {
 		//fmt.Println(time.Now().Format("15:04:05"))
-		ite1 := ites{
+		ite1 := moudle.Ites{
 			Date: time.Now().Format("15:04:05"),
 			Bar:  rand.Intn(900),
 			Line: rand.Intn(30),
@@ -116,36 +93,45 @@ func main() {
 		c.JSON(http.StatusOK, ite1)
 	})
 
-	engine.GET("/liuliang", func(c *gin.Context) {
-		lls := liuliang{}
+	engine.POST("/liuliang", func(c *gin.Context) {
 
-		date := []string{}
-		data := []int{}
+		appG := app.Gin{C: c}
 
-		//startDate := time.Date(2010, time.January, 1, 0, 0, 0, 0, time.UTC)
-		//endDate := time.Date(2020, time.December, 31, 0, 0, 0, 0, time.UTC)
+		var requestData *moudle.RequestData
+		c.ShouldBindJSON(&requestData)
 
-		for i := 0; i < 200; i++ {
-			startDate := time.Date(2010, time.January, i+1, 0, 0, 0, 0, time.UTC)
-			date = append(date, startDate.Format("2006/06/02"))
-			data = append(data, rand.Intn(1000))
+		lls := []moudle.Liuliang{}
+
+		data := new(struct {
+			Times   []string
+			Lengths []int
+		})
+
+		start_date := "2022-01-01 00:00:00"
+		end_date := "2023-01-01 00:00:00"
+		if requestData != nil {
+			start_date = requestData.Start
+			end_date = requestData.End
 		}
-		// 遍历日期区间
-		//for d := startDate; d.Before(endDate); d = d.AddDate(0, 0, 1) {
-		//	//fmt.Println(d.Format("2006/06/02"))
-		//	lls.Date=append(lls.Date,d.Format("2006/06/02"))
-		//	lls.Length=append(lls.Length,rand.Intn(300))
+		err := db.MasterDB.Table("time_sum").Where("timestamp between ? and ?",
+			start_date, end_date).OrderBy("timestamp").Find(&lls)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 
-		lls.Date = date
-		lls.Length = data
-		//fmt.Println(lls)
-		c.JSON(http.StatusOK, lls)
+		for _, ll := range lls {
+			data.Times = append(data.Times, ll.Timestamp)
+			data.Lengths = append(data.Lengths, ll.ResponseContentLength)
+		}
+
+		appG.ResponseSucMsg(data)
 
 	})
 
 	engine.GET("/fenlei", func(c *gin.Context) {
 
-		fenleis := fenlei_data{}
+		fenleis := moudle.Fenlei_data{}
 
 		for i := 0; i < 7; i++ {
 
@@ -157,21 +143,99 @@ func main() {
 
 		}
 
-		fmt.Println(fenleis)
+		//fmt.Println(fenleis)
 
 		c.JSON(http.StatusOK, fenleis)
 
 	})
 
-	engine.POST("/duibi", func(c *gin.Context) {
-		//start :=c.PostForm("start")
-		//end:=c.PostForm("end")
-		//df = web_logs.withColumn("timestamp", to_timestamp(col("timestamp"), "yyyy-MM-dd HH:mm:ss"))
-		//start_time = "2022-01-01 00:00:00"
-		//end_time = "2024-01-31 23:59:59"
-		//web_logs.agg(count("*").alias("count")).show()
-		//web_logs.filter((col("timestamp") >= start_time) & (col("timestamp") <= end_time)).agg(count("*").alias("count")).show()
+	engine.POST("/relitu", func(c *gin.Context) {
+		appG := app.Gin{C: c}
 
+		var requestData *moudle.RequestData
+		var ips []string
+
+		//var setime *startEnd
+		err := c.ShouldBindJSON(&requestData)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		start_date := "2022-01-01 00:00:00"
+		end_date := "2023-01-01 00:00:00"
+		if requestData != nil {
+			start_date = requestData.Start
+			end_date = requestData.End
+		}
+		//fmt.Println(end_date)
+		err = db.MasterDB.Table("timeip").Cols("ip_address").Where("timestamp between ? and ?",
+			start_date, end_date).Find(&ips)
+
+		//var tcs []struct {
+		//	IpAddress string `json:"ip_address"`
+		//	Count     int    `json:"count"`
+		//}
+		//err = db.MasterDB.Table("timeip").Select("ip_address, count(*) as count").Where("timestamp between ? and ?",
+		//	start_date, end_date).GroupBy("ip_address").OrderBy("count").Find(&tcs)
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		var jingweis [][]float64
+		for _, ip := range ips {
+			if ip != "" {
+				jingweidu := ip2eo(ip)
+				jingweis = append(jingweis, jingweidu)
+			}
+		}
+		var arrs [][]float64
+		countMap := make(map[string]int)
+		for _, subArr := range jingweis {
+			// 将二维数组转换为字符串表示，作为 map 的键
+			key := fmt.Sprintf("%v", subArr)
+			// 统计相同数组的数量
+			countMap[key]++
+			subArr = append(subArr, float64(countMap[key]))
+			arrs = append(arrs, subArr)
+		}
+
+		appG.ResponseSucMsg(arrs)
+	})
+	//ip2eo()
+
+	engine.POST("/duibi", func(c *gin.Context) {
+		appG := app.Gin{C: c}
+		var requestData *moudle.RequestData
+
+		//var setime *startEnd
+		err := c.ShouldBindJSON(&requestData)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		start_date := "2022"
+		end_date := "2023"
+		if requestData.Start != "" {
+			start_date = requestData.Start[:4]
+			end_date = requestData.End[:4]
+		}
+		//var data1 = new(struct {
+		//	Data   []string
+		//	Values []int
+		//})
+		data := db.Selecttb(start_date, end_date)
+		//
+		//err = db.MasterDB.Table("time_count").GroupBy("year").Count(&starts).Where("timestamp like '?%'", start_date).Find(&starts)
+		//err = db.MasterDB.Table("time_count").Cols("year").Where("timestamp like '?%'", end_date).Find(&ends)
+		//if err != nil {
+		//	fmt.Println(err)
+		//	return
+		//}
+
+		appG.ResponseSucMsg(data)
 	})
 
 	engine.Run(":9001")
