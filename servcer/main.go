@@ -89,7 +89,7 @@ func main() {
 			Bar:  rand.Intn(900),
 			Line: rand.Intn(30),
 		}
-		fmt.Println(ite1)
+		//fmt.Println(ite1)
 		c.JSON(http.StatusOK, ite1)
 	})
 
@@ -133,17 +133,74 @@ func main() {
 
 		fenleis := moudle.Fenlei_data{}
 
-		for i := 0; i < 7; i++ {
+		var yaowens []moudle.TypeCount
+		var dnagzhengs []moudle.TypeCount
+		var difangs []moudle.TypeCount
+		var guangdians []moudle.TypeCount
 
-			fenleis.Yaowen = append(fenleis.Yaowen, rand.Intn(90))
-			fenleis.Dangzheng = append(fenleis.Dangzheng, rand.Intn(80))
-			fenleis.Difang = append(fenleis.Difang, rand.Intn(500))
-			fenleis.Guandian = append(fenleis.Guandian, rand.Intn(100))
-			fenleis.Qita = append(fenleis.Qita, rand.Intn(100))
-
+		//loadtypes := []string{
+		//	"党政",
+		//	"要闻",
+		//	"地方",
+		//	"观点",
+		//}
+		err := db.MasterDB.Table("type_count").Select("timestamp, SUM(count) AS count").Where("load_type LIKE ?", "党政").
+			GroupBy("timestamp").OrderBy("timestamp DESC").Limit(7).Find(&yaowens)
+		if err != nil {
+			return
 		}
 
-		//fmt.Println(fenleis)
+		for _, yaowen := range yaowens {
+			fenleis.Yaowen = append(fenleis.Yaowen, yaowen.Count)
+		}
+		err = db.MasterDB.Table("type_count").Select("timestamp, SUM(count) AS count").Where("load_type LIKE ?", "要闻").
+			GroupBy("timestamp").OrderBy("timestamp DESC").Limit(7).Find(&dnagzhengs)
+		if err != nil {
+			return
+		}
+
+		for _, item := range dnagzhengs {
+			fenleis.Dangzheng = append(fenleis.Dangzheng, item.Count)
+		}
+		err = db.MasterDB.Table("type_count").Select("timestamp, SUM(count) AS count").Where("load_type LIKE ?", "地方").
+			GroupBy("timestamp").OrderBy("timestamp DESC").Limit(7).Find(&difangs)
+		if err != nil {
+			return
+		}
+
+		for _, item := range difangs {
+			fenleis.Difang = append(fenleis.Difang, item.Count)
+		}
+
+		err = db.MasterDB.Table("type_count").Select("timestamp, SUM(count) AS count").Where("load_type LIKE ?", "观点").
+			GroupBy("timestamp").OrderBy("timestamp DESC").Limit(7).Find(&guangdians)
+		if err != nil {
+			return
+		}
+		for _, item := range guangdians {
+			fenleis.Guandian = append(fenleis.Guandian, item.Count)
+			fenleis.Qita = append(fenleis.Qita, rand.Intn(100))
+			fenleis.Date = append(fenleis.Date, item.Timestamp)
+		}
+
+		//for _, i := range loadtypes {
+		//	err := db.MasterDB.Table("type_count").Select("timestamp,sum(count)").Where("load_type LIKE ?", i).
+		//		GroupBy("load_type,load_type").OrderBy("timestamp DESC").Limit(7).Find(&yaowens)
+		//	if err != nil {
+		//		return
+		//	}
+		//}
+
+		//db.MasterDB.Table("type_count").Select("timestamp,sum(count)").
+		//	GroupBy("load_type,load_type").OrderBy("timestamp").Desc().Limit(7).Find(&yaowens)
+		//db.MasterDB.Table("type_count").Select("timestamp,sum(count)").
+		//	GroupBy("load_type,load_type").OrderBy("timestamp").Desc().Limit(7).Find(&dnagzhengs)
+		//db.MasterDB.Table("type_count").Select("timestamp,sum(count)").
+		//	GroupBy("load_type,load_type").OrderBy("timestamp").Desc().Limit(7).Find(&difangs)
+		//db.MasterDB.Table("type_count").Select("timestamp,sum(count)").
+		//	GroupBy("load_type,load_type").OrderBy("timestamp").Desc().Limit(7).Find(&guangdians)
+
+		//fenleis.Qita = append(fenleis.Qita, rand.Intn(100))
 
 		c.JSON(http.StatusOK, fenleis)
 

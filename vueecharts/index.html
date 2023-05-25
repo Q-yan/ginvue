@@ -629,15 +629,17 @@
                 let dangzheng = [];
                 let yaowen = [];
                 let qita = [];
+                let date =[];
                 axios.get('http://127.0.0.1:9001/fenlei').then(response => {
-                    console.log(response.data)
-                    console.log(response.data.guandian)
+                    // console.log(response.data)
+                    // console.log(response.data.guandian)
                     guandian = response.data.guandian
-                    console.log(guandian)
+                    // console.log(guandian)
                     difang = response.data.difang
                     dangzheng = response.data.dangzheng
                     yaowen = response.data.yaowen
                     qita = response.data.qita
+                    date=response.data.date
 
 
                     var option = {
@@ -662,7 +664,7 @@
                         },
                         yAxis: {
                             type: 'category',
-                            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                            data: date
                         },
                         series: [
                             {
@@ -745,7 +747,7 @@
                 let dynamicdata = []
                 let linedata = []
                 axios.get('http://127.0.0.1:9001/data').then(response => {
-                    console.log(response.data.date)
+                    // console.log(response.data.date)
                     categories = response.data.date;
                     categories2 = response.data.num;
                     dynamicdata = response.data.bar;
@@ -821,19 +823,37 @@
                     ]
                 };
                 app.count = 11;
+
+                var socket = new WebSocket("ws://localhost:8765/ws");
+                socket.onmessage = function(event) {
+                    var data = event.data;
+                    // var container = document.getElementById("data-container");
+
+                    // 将接收到的数据显示在页面上
+                    // container.innerHTML = JSON.stringify(data);
+                    dynamicdata.shift();
+                    dynamicdata.push(data+50);
+                    linedata.shift();
+                    linedata.push(data);
+                    categories.shift();
+                    // categories.push(response.data.date);
+                    categories2.shift();
+                    categories2.push(app.count++);
+                    console.log(dynamicdata)
+                    console.log(linedata)
+                    console.log(categories)
+                    console.log(categories2)
+                };// 替换为实际的 WebSocket 地址
                 setInterval(function () {
                     let axisData = new Date().toLocaleTimeString().replace(/^\D*/, '');
+                    // var socket = new WebSocket("ws://localhost:8765/ws");  // 替换为实际的 WebSocket 地址
 
-                    axios.get('http://127.0.0.1:9001/data2').then(response => {
-                        dynamicdata.shift();
-                        dynamicdata.push(response.data.bar);
-                        linedata.shift();
-                        linedata.push(response.data.line);
-                        categories.shift();
-                        categories.push(response.data.date);
-                        categories2.shift();
-                        categories2.push(app.count++);
-                    })
+
+
+                    // axios.get('http://127.0.0.1:9001/data2').then(response => {
+                    //
+                    //
+                    // })
                     dynamic_data.setOption({
                         xAxis: [
                             {

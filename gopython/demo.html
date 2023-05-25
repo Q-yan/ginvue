@@ -1,33 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>WebSocket Example</title>
+    <title>WebSocket Data</title>
 </head>
 <body>
-<div id="output"></div>
+<div id="data-container"></div>
 
 <script>
-    // 创建 WebSocket 连接
-    var socket = new WebSocket("ws://localhost:8765");
+    var socket = new WebSocket("ws://localhost:8765/ws");  // 替换为实际的 WebSocket 地址
 
-    // 监听 WebSocket 连接的打开事件
-    socket.onopen = function(event) {
-        console.log("WebSocket connection opened");
-    };
-
-    // 监听 WebSocket 连接的消息事件
     socket.onmessage = function(event) {
         var data = event.data;
-        console.log("Received data from server:", data);
-
-        // 在页面上显示接收到的数据
-        var outputDiv = document.getElementById("output");
-        outputDiv.innerHTML += data + "<br>";
-    };
-
-    // 监听 WebSocket 连接的关闭事件
-    socket.onclose = function(event) {
-        console.log("WebSocket connection closed");
+        var container = document.getElementById("data-container");
+        console.log(data)
+        // 将接收到的数据显示在页面上
+        container.innerHTML = JSON.stringify(data);
     };
 </script>
 </body>

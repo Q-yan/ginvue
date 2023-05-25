@@ -51,7 +51,7 @@ func main() {
 	//exec.Command()
 
 	//_ = exec.Command("python", scriptPath)
-	cmd := exec.Command("python", "gopython/test1.py", "hello", "world!")
+	cmd := exec.Command("python", "gopython/websockettest.py", "hello", "world!")
 	output, err := cmd.Output()
 	if err != nil {
 		log.Fatal(err)
