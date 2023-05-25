@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -37,29 +38,29 @@ func main() {
 		// 阻塞等待信号
 		sig := <-signalCh
 		fmt.Println("Received signal:", sig)
-		_ = exec.Command("python", "gopython/stopsession.py")
+		//_ = exec.Command("python", "gopython/socket1.py")
 
 		// 执行程序退出逻辑
 		os.Exit(0)
 	}()
 	//运行你的程序逻辑
 	//...
-	scriptPath := "gopython/socketstreming.py"
+	//scriptPath := "gopython/socketstreming.py"
 	//arg1 := "Hello"
 	//arg2 := "World!"
 	//exec.Command()
 
-	_ = exec.Command("python", scriptPath)
-	//cmd := exec.Command("python", "gopython/stopsession.py")
-	//output, err := cmd.Output()
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//
-	//// 处理Python脚本的输出
-	//result := string(output)
-	//log.Println(result)
-	////fmt.Printf("helloworld!%d", 111)
+	//_ = exec.Command("python", scriptPath)
+	cmd := exec.Command("python", "gopython/test1.py", "hello", "world!")
+	output, err := cmd.Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// 处理Python脚本的输出
+	result := string(output)
+	log.Println(result)
+	//fmt.Printf("helloworld!%d", 111)
 
 	// 程序逻辑执行完成后，等待信号
 	<-signalCh

@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"math/rand"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -191,9 +190,19 @@ func main() {
 				jingweidu := ip2eo(ip)
 				jingweis = append(jingweis, jingweidu)
 			}
-
 		}
-		appG.ResponseSucMsg(jingweis)
+		var arrs [][]float64
+		countMap := make(map[string]int)
+		for _, subArr := range jingweis {
+			// 将二维数组转换为字符串表示，作为 map 的键
+			key := fmt.Sprintf("%v", subArr)
+			// 统计相同数组的数量
+			countMap[key]++
+			subArr = append(subArr, float64(countMap[key]))
+			arrs = append(arrs, subArr)
+		}
+
+		appG.ResponseSucMsg(arrs)
 	})
 	//ip2eo()
 
@@ -207,24 +216,17 @@ func main() {
 			fmt.Println(err)
 			return
 		}
-		start_date := "2023"
-		end_date := "2022"
+		start_date := "2022"
+		end_date := "2023"
 		if requestData.Start != "" {
-			start_date = requestData.Start
-			end_date = requestData.End
+			start_date = requestData.Start[:4]
+			end_date = requestData.End[:4]
 		}
-		start_dates := make([]string, 0)
-		var end_dates = make([]string, 0)
-		for i := 0; i < 12; i++ {
-			start_dates = append(start_dates, start_date+"-"+strconv.Itoa(i+1))
-			end_dates = append(end_dates, end_date+"-"+strconv.Itoa(i+1))
-		}
-		var data = new(struct {
-			Data   []string
-			Values []int
-		})
-		data.Data, data.Values = db.Selecttb(start_date)
-
+		//var data1 = new(struct {
+		//	Data   []string
+		//	Values []int
+		//})
+		data := db.Selecttb(start_date, end_date)
 		//
 		//err = db.MasterDB.Table("time_count").GroupBy("year").Count(&starts).Where("timestamp like '?%'", start_date).Find(&starts)
 		//err = db.MasterDB.Table("time_count").Cols("year").Where("timestamp like '?%'", end_date).Find(&ends)

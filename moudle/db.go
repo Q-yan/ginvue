@@ -34,3 +34,10 @@ type Liuliang struct {
 	Timestamp             string `json:"timestamp"`
 	ResponseContentLength int    `json:"response_content_length"`
 }
+
+type TimeVlues struct {
+	StartDates  []string `json:"start_dates"`
+	EndDates    []string `json:"end_dates"`
+	StartValues []int    `json:"start_values"`
+	EndValues   []int    `json:"end_values"`
+}
