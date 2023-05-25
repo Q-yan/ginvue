@@ -1,14 +1,13 @@
 import asyncio
 import websockets
 
-# 保存所有 WebSocket 连接对象的字典
-connected_clients = {}
+# 保存所有 WebSocket 连接对象的集合
+connected_clients = set()
 
 # 定义 WebSocket 服务器的处理逻辑
 async def handle_websocket(websocket, path):
-    # 将连接对象保存到字典中
-    connected_clients[id(websocket)] = websocket
-    print(connected_clients)
+    # 将连接对象添加到集合中
+    connected_clients.add(websocket)
 
     try:
         while True:
@@ -16,23 +15,15 @@ async def handle_websocket(websocket, path):
             message = await websocket.recv()
             print(f"Received message: {message}")
 
-            # 回复客户端的消息
-            reply_message = f"Server received: {message}"
-            await websocket.send(reply_message)
-
-            # 向指定的客户端发送消息
-            client_id = id(websocket)  # 替换为指定客户端的标识符
-            client = connected_clients.get(client_id)
-            if client:
-                await client.send(message)
+            # 向所有连接的前端客户端发送消息
+            await send_to_all_clients(message)
     finally:
-        # 连接关闭时从字典中移除连接对象
-        del connected_clients[id(websocket)]
+        # 连接关闭时从集合中移除连接对象
+        connected_clients.remove(websocket)
 
-# 向指定的客户端发送消息
-async def send_to_client(client_id, message):
-    client = connected_clients.get(client_id)
-    if client:
+# 向所有连接的前端客户端发送消息
+async def send_to_all_clients(message):
+    for client in connected_clients:
         await client.send(message)
 
 # 启动 WebSocket 服务器

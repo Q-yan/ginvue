@@ -10,8 +10,10 @@
     var socket = new WebSocket("ws://localhost:8765/ws");  // 替换为实际的 WebSocket 地址
 
     socket.onmessage = function(event) {
-        var data = event.data;
+        var data = JSON.parse(event.data) ;
+        // console.log(data)
         var container = document.getElementById("data-container");
+
         console.log(data)
         // 将接收到的数据显示在页面上
         container.innerHTML = JSON.stringify(data);

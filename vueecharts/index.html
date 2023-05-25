@@ -746,13 +746,6 @@
                 let categories2 = [];
                 let dynamicdata = []
                 let linedata = []
-                axios.get('http://127.0.0.1:9001/data').then(response => {
-                    // console.log(response.data.date)
-                    categories = response.data.date;
-                    categories2 = response.data.num;
-                    dynamicdata = response.data.bar;
-                    linedata = response.data.line;
-                })
                 option = {
                     grid: {
                         top: '20%',
@@ -825,35 +818,30 @@
                 app.count = 11;
 
                 var socket = new WebSocket("ws://localhost:8765/ws");
+
                 socket.onmessage = function(event) {
-                    var data = event.data;
+                    var data = JSON.parse(event.data) ;
+                    // console.log(data)
+
                     // var container = document.getElementById("data-container");
 
                     // 将接收到的数据显示在页面上
                     // container.innerHTML = JSON.stringify(data);
-                    dynamicdata.shift();
-                    dynamicdata.push(data+50);
-                    linedata.shift();
-                    linedata.push(data);
-                    categories.shift();
-                    // categories.push(response.data.date);
-                    categories2.shift();
-                    categories2.push(app.count++);
-                    console.log(dynamicdata)
-                    console.log(linedata)
-                    console.log(categories)
-                    console.log(categories2)
-                };// 替换为实际的 WebSocket 地址
-                setInterval(function () {
-                    let axisData = new Date().toLocaleTimeString().replace(/^\D*/, '');
-                    // var socket = new WebSocket("ws://localhost:8765/ws");  // 替换为实际的 WebSocket 地址
-
-
-
-                    // axios.get('http://127.0.0.1:9001/data2').then(response => {
-                    //
-                    //
-                    // })
+                    if (dynamicdata.length<10){
+                        dynamicdata.push(data.bar);
+                        linedata.push(data.line);
+                        categories.push(data.date);
+                        categories2.push(app.count++);
+                    }else {
+                        dynamicdata.shift();
+                        dynamicdata.push(data.bar);
+                        linedata.shift();
+                        linedata.push(data.line);
+                        categories.shift();
+                        categories.push(data.date);
+                        categories2.shift();
+                        categories2.push(app.count++);
+                    }
                     dynamic_data.setOption({
                         xAxis: [
                             {
@@ -872,7 +860,19 @@
                             }
                         ]
                     });
-                }, 2000);
+                };// 替换为实际的 WebSocket 地址
+                // setInterval(function () {
+                //     let axisData = new Date().toLocaleTimeString().replace(/^\D*/, '');
+                //     // var socket = new WebSocket("ws://localhost:8765/ws");  // 替换为实际的 WebSocket 地址
+                //
+                //
+                //
+                //     // axios.get('http://127.0.0.1:9001/data2').then(response => {
+                //     //
+                //     //
+                //     // })
+                //
+                // }, 2000);
 
                 dynamic_data.setOption(option)
             },
