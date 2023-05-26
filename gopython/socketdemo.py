@@ -174,15 +174,15 @@ def start_server(host, port):
 
             # 构建Web点击日志数据
             web_log = {
-                'timestamp': timestamp,
-                'response_content_length':response_content_length,
+                "timestamp": timestamp,
+                "response_content_length":response_content_length,
             }
             # print(web_log)
-            data_str=str(web_log)
+            data_str=json.dumps(web_log)
             data_str=data_str+"\n"
             client_socket.sendall(data_str.encode('utf-8'))
-            print(web_log)
-        time.sleep(2)
+            # print(web_log)
+        time.sleep(5)
         # while True:
         #     message = "Hello, client!"
         #     client_socket.send(message.encode())

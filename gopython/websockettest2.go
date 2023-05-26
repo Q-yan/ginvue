@@ -1,10 +1,13 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"ginvue/moudle"
+	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
-
-	"github.com/gorilla/websocket"
+	"time"
 )
 
 var (
@@ -14,6 +17,7 @@ var (
 		},
 	}
 	clients = make(map[*websocket.Conn]bool)
+	Num     = 1
 )
 
 func main() {
@@ -40,7 +44,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// 处理接收到的消息
-		log.Println("Received message:", string(msg))
+		//log.Println("Received message:", string(msg))
 
 		// 可以在这里编写逻辑，对接收到的消息进行处理
 		err = conn.WriteJSON(string(msg))
@@ -60,35 +64,33 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 }
 
 func sendMessageToAll(message string) {
+
+	var data moudle.Ites
+	err := json.Unmarshal([]byte(message), &data)
+	if err != nil {
+		fmt.Println("解析JSON失败:", err)
+		return
+	}
+	//
+	//num, err := strconv.ParseFloat(message, 64)
+	//if err != nil {
+	//	fmt.Println("转换失败:", err)
+	//	return
+	//}
+	//ite1 := moudle.Ites{
+	//	Date: time.Now().Format("15:04:05"),
+	//	Bar:  int(num) / 1000000,
+	//	Line: rand.Intn(30),
+	//}
+	data.Date = time.Now().Format("15:04:05")
+	Num = Num + 1
+	data.Num = Num
 	for conn := range clients {
-		err := conn.WriteJSON(message)
+		err := conn.WriteJSON(data)
 		if err != nil {
 			log.Println("Failed to send message to client:", err)
 			conn.Close()
 			delete(clients, conn)
 		}
-	}
-}
-
-func handleClientMessages(conn *websocket.Conn) {
-	for {
-		// 检查连接状态
-		if _, _, err := conn.NextReader(); err != nil {
-			log.Println("Connection closed:", err)
-			break
-		}
-
-		// 从连接中接收消息
-		_, message, err := conn.ReadMessage()
-		if err != nil {
-			log.Println("Failed to read message from client:", err)
-			break
-		}
-
-		// 处理接收到的消息
-		log.Println("Received message:", string(message))
-
-		// 将消息发送给所有连接的前端
-		sendMessageToAll(string(message))
 	}
 }

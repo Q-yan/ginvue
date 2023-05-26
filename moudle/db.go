@@ -5,6 +5,12 @@ type RequestData struct {
 	End   string `json:"end"`
 }
 
+type name interface {
+}
+type RequestData1 struct {
+	Start string `json:"start"`
+	End   string `json:"end"`
+}
 type Fenlei_data struct {
 	Yaowen    []int    `json:"yaowen"`
 	Dangzheng []int    `json:"dangzheng"`
@@ -46,4 +52,10 @@ type TimeVlues struct {
 type TypeCount struct {
 	Timestamp string `xorm:"timestamp"`
 	Count     int    `xorm:"count"`
+}
+
+type Difang_sum struct {
+	//LoadType string `json:"load_type"`
+	Name  string `json:"name"`
+	Value int    `json:"value"`
 }

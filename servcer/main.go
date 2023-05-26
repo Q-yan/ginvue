@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"math/rand"
 	"net/http"
-	"time"
 )
 
 func init() {
@@ -60,47 +59,42 @@ func main() {
 	})
 
 	//初始化动态折线图
-	engine.GET("/data", func(c *gin.Context) {
+	engine.POST("/data", func(c *gin.Context) {
 
-		items := moudle.Item{
-			Date: []string{},
-			Num:  []int{},
+		appG := app.Gin{C: c}
+
+		var data []*moudle.Difang_sum
+		var requestData *moudle.RequestData
+		//var setime *startEnd
+		err := c.ShouldBindJSON(&requestData)
+		if err != nil {
+			fmt.Println(err)
+			return
 		}
-		now := time.Now()
-
-		for i := 9; i >= 0; i-- {
-
-			ite := now.Format("15:04:05")
-			items.Date = append(items.Date, ite)
-			items.Num = append(items.Num, i+1)
-			items.Bar = append(items.Bar, i*100)
-			items.Line = append(items.Line, i*5)
-			now = now.Add(-2 * time.Second)
+		start_date := "2022-01-01 00:00:00"
+		end_date := "2023-01-01 00:00:00"
+		if requestData != nil {
+			start_date = requestData.Start
+			end_date = requestData.End
 		}
-		reverseArray(items.Num)
-		fmt.Println(items)
-		c.JSON(http.StatusOK, items)
-	})
+		//select load_type,sum(`count(1)`) as sum from difang_sum where timestamp like '2016-%' group by load_type
+		err = db.MasterDB.Table("difang_sum").Select("load_type as name,sum(`count(1)`) as value").
+			Where("timestamp  between ? and ?", start_date, end_date).GroupBy("load_type").Find(&data)
+		if err != nil {
+			return
 
-	engine.GET("/data2", func(c *gin.Context) {
-		//ite1 := moudle.Ites{
-		//	Date: time.Now().Format("15:04:05"),
-		//	Bar:  rand.Intn(900),
-		//	Line: rand.Intn(30),
-		//}
-		////fmt.Println(ite1)
-		//c.JSON(http.StatusOK, ite1)
+		}
 
-		//http.HandleFunc("/ws", handleWebSocket)
-		//log.Println("WebSocket server started on :8765")
-		//log.Fatal(http.ListenAndServe(":8765", nil))
+		appG.ResponseSucMsg(data)
 	})
 
 	engine.POST("/liuliang", func(c *gin.Context) {
 
 		appG := app.Gin{C: c}
 
-		var requestData *moudle.RequestData
+		//var requestData []string
+		var requestData *moudle.RequestData1
+
 		c.ShouldBindJSON(&requestData)
 
 		lls := []moudle.Liuliang{}
