@@ -57,11 +57,6 @@ func generateData() moudle.Ites {
 		Bar:  rand.Intn(900),
 		Line: rand.Intn(30),
 	}
-	//fmt.Println(ite1)
-	//c.JSON(http.StatusOK, ite1)
-	//data := make(map[string]interface{})
-	//data["timestamp"] = time.Now().Unix()
-	//data["value"] = generateRandomValue()
 	return ite1
 }
 

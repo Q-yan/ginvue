@@ -12,21 +12,30 @@ fake = Faker()
 
 start_time = datetime(2020, 5, 1)
 end_time = datetime(2023, 5, 10)
-
-# # 创建一个TCP/IP客户端
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#
+# # 定义服务器地址和端口
+# server_address = ('localhost', 9909)
+#
+# # 创建Socket对象
+# server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# # 绑定服务器地址和端口
+# server_socket.bind(server_address)
 
 # 创建 WebSocket 连接
-ws = websocket.WebSocket()
-ws.connect("ws://localhost:8765/ws")
+# ws = websocket.WebSocket()
+# ws.connect("ws://localhost:8765/ws")
+# 监听连接
+# server_socket.listen(1)
 
-# 处理数据的函数
-def process_data(rdd):
-    # 将数据转换为 JSON 字符串
-    json_data = json.dumps(rdd.collect())
 
-    # 发送数据给 WebSocket
-    ws.send(json_data)
+
+# # 处理数据的函数
+# def process_data(rdd):
+#     # 将数据转换为 JSON 字符串
+#     json_data = json.dumps(rdd.collect())
+#
+#     # 发送数据给 WebSocket
+#     ws.send(json_data)
 def get_ip():
     ips = ['58.14.0.0', '58.16.0.0', '58.24.0.0', '58.30.0.0', '58.32.0.0', '58.66.0.0', '58.68.128.0', '58.82.0.0',
            '58.87.64.0', '58.99.128.0', '58.100.0.0', '58.116.0.0', '58.128.0.0', '58.144.0.0', '58.154.0.0', '58.192.0.0',
@@ -139,81 +148,48 @@ def random_timestamp(start, end):
     random_second = fake.random_int(min=0, max=int_delta)
     return int(time.mktime(start.timetuple())) + random_second
 
-while True:
+def start_server(host, port):
+    # 创建socket对象
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind((host, port))
+    server_socket.listen(1)
 
-    i = int(fake.random_number(digits=3))
-    # print("生成"+str(i)+"条数据")
-    # for _ in range(i):
-    #     # 生成时间戳
-    #
-    #     timestamp = str(fake.date_time_between_dates(datetime_start=start_time, datetime_end=end_time))
-    #     #         timestamp = random_timestamp(start_time, end_time)
-    #
-    #     # 生成用户ID
-    #     user_id = "user"+str(fake.random_number(digits=3))
-    #
-    #     # 生成页面URL和页面标题
-    #     page_url = fake.url()
-    #     page_title = fake.catch_phrase()
-    #
-    #     # 生成动作和元素ID
-    #     action = fake.random_element(elements=('点击', '浏览', '搜索'))
-    #     element_id = fake.uuid4()
-    #
-    #     # 生成参考来源
-    #     referrer = fake.url()
-    #
-    #     # # 生成设备信息
-    #     device_os = fake.random_element(elements=('Windows', 'MacOS', 'Linux'))
-    #
-    #     # 生成IP地址和用户代理
-    #     ip_address = get_ip()
-    #     user_agent = fake.user_agent()
-    #
-    #     # 生成其他自定义字段
-    #     # custom_field1 = fake.random_element(elements=(1, 2, 3))
-    #     elements=["党政/党网_时政","党政/人事","党政/反腐","党政/理论","党政/党史","党政/党建","要闻/经济_科技","观点/三评","观点/人民财评","观点/人民来论","观点/人民访谈","观点/人民体谈","要闻/社会_法治","要闻/文旅_体育","要闻/健康_生活","要闻/国际","要闻/军事","要闻/港澳" "要闻/台湾","要闻/教育","要闻/科普","地方/京","地方/津","地方/冀","地方/晋","地方/蒙", "地方/辽","地方/吉","地方/黑","地方/沪","地方/苏","地方/浙","地方/皖","地方/闽","地方/赣","地方/鲁","地方/豫","地方/鄂","地方/湘","地方/粤","地方/桂","地方/琼","地方/渝","地方/川","地方/黔","地方/滇","地方/藏","地方/陕","地方/甘","地方/青","地方/宁","地方/新","地方/鹏","地方/雄安"]
-    #     # 要闻.经济_科技  要闻.社会_法治  要闻.文旅_体育 健康_生活 要闻.国际 要闻.军事 要闻.港澳 要闻.台湾 要闻.教育 要闻.科普
-    #     # 观点.人民网评 观点.三评 观点.人民财评 观点.人民来论 观点.人民访谈 观点.人民体谈
-    #     # 地方.京 地方.津 地方.冀 地方.晋 地方.蒙 地方.辽 地方.吉 地方.黑 地方.沪 地方.苏 地方.浙 地方.皖 地方.闽 地方.赣 地方.鲁 地方.豫 地方.鄂 地方.湘 地方.粤 地方.桂 地方.琼 地方.渝 地方.川 地方.黔 地方.滇 地方.藏 地方.陕 地方.甘 地方.青 地方.宁 地方.新 地方.鹏 地方.雄安
-    #     # page_title=fake.random_element(elements=("要闻.经济_科技","观点.三评","观点.人民财评","观点.人民来论","观点.人民访谈","观点.人民体谈"))
-    #     load_type=fake.random_element(elements)
-    #
-    #
-    #     response_content_length =str(fake.random_number(digits=6))+"bytes"
-    #     http_status=fake.random_element(elements=(200,500,404,503,502,403))
-    #
-    #     # 构建Web点击日志数据
-    #     web_log = {
-    #         'timestamp': timestamp,
-    #         'ip_address': ip_address,
-    #         'user_id': user_id,
-    #         'load_type': load_type,
-    #         'page_url': page_url,
-    #         'referrer': referrer,
-    #         'http_status':http_status,
-    #         'page_title': page_title,
-    #         'device_os':device_os,
-    #         'user_agent': user_agent,
-    #         'response_content_length':response_content_length,
-    #     }
-    #
-    #
-    #
-    #
-    #
-    #     with open('web_log1.json', 'a') as f:
-    #         f.write(json.dumps(web_log,indent=None, ensure_ascii=False))
-    #         f.write("\n")  # 手动添加换行符
+    print("Server listening on {}:{}".format(host, port))
 
-    try:
-        print(i)
-        ws.send(str(i).encode('utf-8'))
-    except BrokenPipeError:
-        # 处理连接已关闭的情况
-        print("WebSocket connection closed.")
+    # 接受客户端连接
+    client_socket, client_address = server_socket.accept()
+    print("Client connected from:", client_address)
 
-    time.sleep(2)
+    # 持续发送数据
+    while True:
+        # client_socket, client_address = server_socket.accept()
+        # print('New connection from:', client_address)
 
-# 关闭客户端连接
-client_socket.close()
+        i = int(fake.random_number(digits=3))
+        print("生成"+str(i)+"条数据")
+        for _ in range(i):
+            # 生成时间戳
+            timestamp = str(fake.date_time_between_dates(datetime_start=start_time, datetime_end=end_time))
+            response_content_length =str(fake.random_number(digits=6))+"bytes"
+
+            # 构建Web点击日志数据
+            web_log = {
+                'timestamp': timestamp,
+                'response_content_length':response_content_length,
+            }
+            # print(web_log)
+            data_str=str(web_log)
+            data_str=data_str+"\n"
+            client_socket.sendall(data_str.encode('utf-8'))
+            print(web_log)
+        time.sleep(2)
+        # while True:
+        #     message = "Hello, client!"
+        #     client_socket.send(message.encode())
+
+        # 关闭连接
+    client_socket.close()
+    server_socket.close()
+
+# 启动服务器
+start_server("localhost", 9919)
