@@ -52,13 +52,6 @@
                 let categories2 =[];
                 let dynamicdata=[]
                 let  linedata=[]
-                axios.get('http://127.0.0.1:9001/data').then(response => {
-                        console.log(response.data.date)
-                        categories= response.data.date;
-                        categories2=response.data.num;
-                    dynamicdata=response.data.bar;
-                    linedata=response.data.line;
-                    })
                 option = {
                     grid:{
                         top: '20%',

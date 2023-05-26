@@ -5,12 +5,19 @@ type RequestData struct {
 	End   string `json:"end"`
 }
 
+type name interface {
+}
+type RequestData1 struct {
+	Start string `json:"start"`
+	End   string `json:"end"`
+}
 type Fenlei_data struct {
-	Yaowen    []int `json:"yaowen"`
-	Dangzheng []int `json:"dangzheng"`
-	Guandian  []int `json:"guandian"`
-	Difang    []int `json:"difang"`
-	Qita      []int `json:"qita"`
+	Yaowen    []int    `json:"yaowen"`
+	Dangzheng []int    `json:"dangzheng"`
+	Guandian  []int    `json:"guandian"`
+	Difang    []int    `json:"difang"`
+	Qita      []int    `json:"qita"`
+	Date      []string `json:"date"`
 }
 
 type Item struct {
@@ -40,4 +47,15 @@ type TimeVlues struct {
 	EndDates    []string `json:"end_dates"`
 	StartValues []int    `json:"start_values"`
 	EndValues   []int    `json:"end_values"`
+}
+
+type TypeCount struct {
+	Timestamp string `xorm:"timestamp"`
+	Count     int    `xorm:"count"`
+}
+
+type Difang_sum struct {
+	//LoadType string `json:"load_type"`
+	Name  string `json:"name"`
+	Value int    `json:"value"`
 }

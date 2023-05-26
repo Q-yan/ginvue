@@ -92,7 +92,8 @@
                         range-separator="至"
                         start-placeholder="开始月份"
                         end-placeholder="结束月份"
-                        @change="initCharts"
+                        value-format="yyyy-MM-dd"
+                        @change="select"
                         >
                 </el-date-picker>
 
@@ -164,7 +165,7 @@
         // },
         data() {
             return {
-                value1: '2022-01-01 00:00:00',
+                value1: ['2023-01-01','2023-02-01'],
                 value2: '2022-06-02 00:00:00',
                 value3: '2023-01-01 00:00:00'
             }
@@ -182,131 +183,116 @@
             clearInterval(this.intervalId);
         },
         methods: {
+
+            select(){
+                console.log(this.value1)
+                this.liuliang_data()
+                this.renderMap()
+                this.relitu()
+            },
             //初始化地图
             renderMap() {
 
 
-                var ditu = echarts.init(document.getElementById('ditu'));
-                window.addEventListener('resize', function () {
-                    ditu.resize();
-                });
+                axios.post('http://127.0.0.1:9001/data',{
+                    "start":this.value1[0],
+                    "end":this.value1[1]
 
-                window.dataList = [
-                    {name: '澳门', value: 18},
-                    {name: '香港', value: 273},
-                    {name: '台湾', value: 153},
-                    {name: '新疆', value: 76},
-                    {name: '宁夏', value: 75},
-                    {name: '青海', value: 18},
-                    {name: '甘肃', value: 134},
-                    {name: '陕西', value: 248},
-                    {name: '西藏', value: 100000},
-                    {name: '云南', value: 176},
-                    {name: '贵州', value: 146},
-                    {name: '四川', value: 543},
-                    {name: '重庆', value: 576},
-                    {name: '海南', value: 168},
-                    {name: '广西', value: 254},
-                    {name: '广东', value: 1407},
-                    {name: '湖南', value: 1018},
-                    {name: '湖北', value: 67800},
-                    {name: '河南', value: 1273},
-                    {name: '山东', value: 765},
-                    {name: '江西', value: 936},
-                    {name: '福建', value: 307},
-                    {name: '安徽', value: 990},
-                    {name: '浙江', value: 1237},
-                    {name: '江苏', value: 633},
-                    {name: '上海', value: 394},
-                    {name: '黑龙江', value: 484},
-                    {name: '吉林', value: 93},
-                    {name: '辽宁', value: 126},
-                    {name: '内蒙古', value: 75},
-                    {name: '山西', value: 133},
-                    {name: '河北', value: 319},
-                    {name: '天津', value: 137},
-                    {name: '北京', value: 512}
-                ];
-                option = {
-                    tooltip: {
-                        triggerOn: "click",
-                        formatter: function (e, t, n) {
-                            return '.5' == e.value ? e.name + "：有疑似病例" : e.seriesName + "<br />" + e.name + "：" + e.value
-                        }
-                    },
-
-                    visualMap: {
-                        min: 0,
-                        max: 100000,
-                        left: 26,
-                        bottom: 40,
-                        showLabel: !0,
-                        text: ["高", "低"],
-                        pieces: [{
-                            gt: 10000,
-                            label: "> 10000次",
-                            color: "#7f1100"
-                        }, {
-                            gte: 1000,
-                            lte: 10000,
-                            label: "1000 - 10000次",
-                            color: "#ff5428"
-                        }, {
-                            gte: 100,
-                            lt: 1000,
-                            label: "100 - 1000次",
-                            color: "#ff8c71"
-                        }, {
-                            gt: 10,
-                            lt: 100,
-                            label: "10 - 100次",
-                            color: "#ffd768"
-                        }, {
-                            gt: 1,
-                            lt: 10,
-                            label: "1 - 10次",
-                            color: "#ffffff"
-                        }],
-                        show: !0
-                    },
-                    geo: {
-                        map: "china",
-                        roam: !1,
-                        scaleLimit: {
-                            min: 1,
-                            max: 2
-                        },
-                        zoom: 1.23,
-                        top: 120,
-                        label: {
-                            normal: {
-                                show: !0,
-                                fontSize: "14",
-                                color: "rgba(0,0,0,0.7)"
+                },{
+                    "Content-Type":"application/json; charset=utf-8"
+                }).then(response => {
+                    var ditu = echarts.init(document.getElementById('ditu'));
+                    window.addEventListener('resize', function () {
+                        ditu.resize();
+                    });
+                    window.dataList = response.data.data
+                    option = {
+                        tooltip: {
+                            triggerOn: "click",
+                            formatter: function (e, t, n) {
+                                return '.5' == e.value ? e.name + "：有疑似病例" : e.seriesName + "<br />" + e.name + "：" + e.value
                             }
                         },
-                        itemStyle: {
-                            normal: {
-                                //shadowBlur: 50,
-                                //shadowColor: 'rgba(0, 0, 0, 0.2)',
-                                borderColor: "rgba(0, 0, 0, 0.2)"
+
+                        visualMap: {
+                            min: 0,
+                            max: 100000,
+                            left: 26,
+                            bottom: 40,
+                            showLabel: !0,
+                            text: ["高", "低"],
+                            pieces: [{
+                                gt: 10000,
+                                label: "> 10000次",
+                                color: "#7f1100"
+                            }, {
+                                gte: 1000,
+                                lte: 10000,
+                                label: "1000 - 10000次",
+                                color: "#ff5428"
+                            }, {
+                                gte: 100,
+                                lt: 1000,
+                                label: "100 - 1000次",
+                                color: "#ff8c71"
+                            }, {
+                                gt: 10,
+                                lt: 100,
+                                label: "10 - 100次",
+                                color: "#ffd768"
+                            }, {
+                                gt: 1,
+                                lt: 10,
+                                label: "1 - 10次",
+                                color: "#ffffff"
+                            }],
+                            show: !0
+                        },
+                        geo: {
+                            map: "china",
+                            roam: !1,
+                            scaleLimit: {
+                                min: 1,
+                                max: 2
                             },
-                            emphasis: {
-                                areaColor: "#f2d5ad",
-                                shadowOffsetX: 0,
-                                shadowOffsetY: 0,
-                                borderWidth: 0
+                            zoom: 1.23,
+                            top: 120,
+                            label: {
+                                normal: {
+                                    show: !0,
+                                    fontSize: "14",
+                                    color: "rgba(0,0,0,0.7)"
+                                }
+                            },
+                            itemStyle: {
+                                normal: {
+                                    //shadowBlur: 50,
+                                    //shadowColor: 'rgba(0, 0, 0, 0.2)',
+                                    borderColor: "rgba(0, 0, 0, 0.2)"
+                                },
+                                emphasis: {
+                                    areaColor: "#f2d5ad",
+                                    shadowOffsetX: 0,
+                                    shadowOffsetY: 0,
+                                    borderWidth: 0
+                                }
                             }
-                        }
-                    },
-                    series: [{
-                        name: "访问次数",
-                        type: "map",
-                        geoIndex: 0,
-                        data: window.dataList
-                    }]
-                };
-                ditu.setOption(option);
+                        },
+                        series: [{
+                            name: "访问次数",
+                            type: "map",
+                            geoIndex: 0,
+                            data: window.dataList
+                        }]
+                    };
+                    ditu.setOption(option);
+
+                })
+
+
+
+
+
             },
             //初始化图表
             initCharts() {
@@ -318,8 +304,7 @@
 
                     },{
                         "Content-Type":"application/json; charset=utf-8"
-                    })
-                        .then(response => {
+                    }).then(response => {
 
                             start_dates=response.data.data.start_dates
                             end_dates=response.data.data.end_dates
@@ -453,12 +438,9 @@
 
             relitu() {
                 //高峰图
-
-
-
                 axios.post('http://127.0.0.1:9001/relitu',{
-                    "start":this.value1,
-                    "end":this.value2
+                    "start":this.value1[0],
+                    "end":this.value1[1]
                 },{
                     "Content-Type":"application/json; charset=utf-8"
                 })
@@ -470,9 +452,6 @@
 
                         // [经，纬，量]
                         var dataList=response.data.data
-
-
-
                         option = {
                             title: {
                                 text: '热力图',
@@ -487,7 +466,7 @@
                                 show: false,
                                 min: 0,
                                 max: 500,
-                                splitNumber: 100,
+                                splitNumber: 50,
                                 inRange: {
                                     color: ['#d94e5d', '#eac736', '#50a3ba'].reverse()
                                 },
@@ -514,21 +493,14 @@
                                 }
                             },
                             series: [{
-                                name: 'AQI',
+                                name: 'IP地址',
                                 type: 'heatmap',
                                 coordinateSystem: 'geo',
                                 data: dataList
                             }]
                         };
-
                         // 使用刚指定的配置项和数据显示图表。
                         relitu.setOption(option);
-
-
-
-
-
-
                     })
                     .catch(error => {
                         console.error(error);
@@ -546,13 +518,15 @@
                 });
                 let date = [];
                 let data = [];
+                console.log(this.value1)
                 axios.post('http://127.0.0.1:9001/liuliang',{
-                    "start":this.value1,
-                    "end":this.value2
+                    "start":this.value1[0],
+                    "end":this.value1[1]
                 },{
                     "Content-Type":"application/json; charset=utf-8"
                 }).then(response => {
-                    console.log(response.data)
+                    console.log(this.value1)
+                    // console.log(response.data)
                     date = response.data.data.Times
                     data = response.data.data.Lengths
 
@@ -629,15 +603,17 @@
                 let dangzheng = [];
                 let yaowen = [];
                 let qita = [];
+                let date =[];
                 axios.get('http://127.0.0.1:9001/fenlei').then(response => {
-                    console.log(response.data)
-                    console.log(response.data.guandian)
+                    // console.log(response.data)
+                    // console.log(response.data.guandian)
                     guandian = response.data.guandian
-                    console.log(guandian)
+                    // console.log(guandian)
                     difang = response.data.difang
                     dangzheng = response.data.dangzheng
                     yaowen = response.data.yaowen
                     qita = response.data.qita
+                    date=response.data.date
 
 
                     var option = {
@@ -662,7 +638,7 @@
                         },
                         yAxis: {
                             type: 'category',
-                            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                            data: date
                         },
                         series: [
                             {
@@ -744,13 +720,6 @@
                 let categories2 = [];
                 let dynamicdata = []
                 let linedata = []
-                axios.get('http://127.0.0.1:9001/data').then(response => {
-                    console.log(response.data.date)
-                    categories = response.data.date;
-                    categories2 = response.data.num;
-                    dynamicdata = response.data.bar;
-                    linedata = response.data.line;
-                })
                 option = {
                     grid: {
                         top: '20%',
@@ -791,16 +760,16 @@
                         {
                             type: 'value',
                             scale: true,
-                            name: 'Price',
-                            max: 30,
+                            name: '次数',
+                            max: 1000,
                             min: 0,
                             // boundaryGap: '50%',
                         },
                         {
                             type: 'value',
                             scale: true,
-                            name: 'Order',
-                            max: 1200,
+                            name: '流量',
+                            max: 5000,
                             min: 0,
                             // boundaryGap: '50%'
                         }
@@ -821,19 +790,26 @@
                     ]
                 };
                 app.count = 11;
-                setInterval(function () {
-                    let axisData = new Date().toLocaleTimeString().replace(/^\D*/, '');
 
-                    axios.get('http://127.0.0.1:9001/data2').then(response => {
+                var socket = new WebSocket("ws://localhost:8765/ws");
+
+                socket.onmessage = function(event) {
+                    var data = JSON.parse(event.data) ;
+                    if (dynamicdata.length<10){
+                        dynamicdata.push(data.bar);
+                        linedata.push(data.line);
+                        categories.push(data.date);
+                        categories2.push(data.num);
+                    }else {
                         dynamicdata.shift();
-                        dynamicdata.push(response.data.bar);
+                        dynamicdata.push(data.bar);
                         linedata.shift();
-                        linedata.push(response.data.line);
+                        linedata.push(data.line);
                         categories.shift();
-                        categories.push(response.data.date);
+                        categories.push(data.date);
                         categories2.shift();
-                        categories2.push(app.count++);
-                    })
+                        categories2.push(data.num);
+                    }
                     dynamic_data.setOption({
                         xAxis: [
                             {
@@ -852,7 +828,7 @@
                             }
                         ]
                     });
-                }, 2000);
+                };
 
                 dynamic_data.setOption(option)
             },

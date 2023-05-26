@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"math/rand"
 	"net/http"
-	"time"
 )
 
 func init() {
@@ -60,44 +59,42 @@ func main() {
 	})
 
 	//初始化动态折线图
-	engine.GET("/data", func(c *gin.Context) {
+	engine.POST("/data", func(c *gin.Context) {
 
-		items := moudle.Item{
-			Date: []string{},
-			Num:  []int{},
+		appG := app.Gin{C: c}
+
+		var data []*moudle.Difang_sum
+		var requestData *moudle.RequestData
+		//var setime *startEnd
+		err := c.ShouldBindJSON(&requestData)
+		if err != nil {
+			fmt.Println(err)
+			return
 		}
-		now := time.Now()
-
-		for i := 9; i >= 0; i-- {
-
-			ite := now.Format("15:04:05")
-			items.Date = append(items.Date, ite)
-			items.Num = append(items.Num, i+1)
-			items.Bar = append(items.Bar, i*100)
-			items.Line = append(items.Line, i*5)
-			now = now.Add(-2 * time.Second)
+		start_date := "2022-01-01 00:00:00"
+		end_date := "2023-01-01 00:00:00"
+		if requestData != nil {
+			start_date = requestData.Start
+			end_date = requestData.End
 		}
-		reverseArray(items.Num)
-		fmt.Println(items)
-		c.JSON(http.StatusOK, items)
-	})
+		//select load_type,sum(`count(1)`) as sum from difang_sum where timestamp like '2016-%' group by load_type
+		err = db.MasterDB.Table("difang_sum").Select("load_type as name,sum(`count(1)`) as value").
+			Where("timestamp  between ? and ?", start_date, end_date).GroupBy("load_type").Find(&data)
+		if err != nil {
+			return
 
-	engine.GET("/data2", func(c *gin.Context) {
-		//fmt.Println(time.Now().Format("15:04:05"))
-		ite1 := moudle.Ites{
-			Date: time.Now().Format("15:04:05"),
-			Bar:  rand.Intn(900),
-			Line: rand.Intn(30),
 		}
-		fmt.Println(ite1)
-		c.JSON(http.StatusOK, ite1)
+
+		appG.ResponseSucMsg(data)
 	})
 
 	engine.POST("/liuliang", func(c *gin.Context) {
 
 		appG := app.Gin{C: c}
 
-		var requestData *moudle.RequestData
+		//var requestData []string
+		var requestData *moudle.RequestData1
+
 		c.ShouldBindJSON(&requestData)
 
 		lls := []moudle.Liuliang{}
@@ -133,17 +130,49 @@ func main() {
 
 		fenleis := moudle.Fenlei_data{}
 
-		for i := 0; i < 7; i++ {
+		var yaowens []moudle.TypeCount
+		var dnagzhengs []moudle.TypeCount
+		var difangs []moudle.TypeCount
+		var guangdians []moudle.TypeCount
 
-			fenleis.Yaowen = append(fenleis.Yaowen, rand.Intn(90))
-			fenleis.Dangzheng = append(fenleis.Dangzheng, rand.Intn(80))
-			fenleis.Difang = append(fenleis.Difang, rand.Intn(500))
-			fenleis.Guandian = append(fenleis.Guandian, rand.Intn(100))
-			fenleis.Qita = append(fenleis.Qita, rand.Intn(100))
-
+		err := db.MasterDB.Table("type_count").Select("timestamp, SUM(count) AS count").Where("load_type LIKE ?", "党政").
+			GroupBy("timestamp").OrderBy("timestamp DESC").Limit(7).Find(&yaowens)
+		if err != nil {
+			return
 		}
 
-		//fmt.Println(fenleis)
+		for _, yaowen := range yaowens {
+			fenleis.Yaowen = append(fenleis.Yaowen, yaowen.Count)
+		}
+		err = db.MasterDB.Table("type_count").Select("timestamp, SUM(count) AS count").Where("load_type LIKE ?", "要闻").
+			GroupBy("timestamp").OrderBy("timestamp DESC").Limit(7).Find(&dnagzhengs)
+		if err != nil {
+			return
+		}
+
+		for _, item := range dnagzhengs {
+			fenleis.Dangzheng = append(fenleis.Dangzheng, item.Count)
+		}
+		err = db.MasterDB.Table("type_count").Select("timestamp, SUM(count) AS count").Where("load_type LIKE ?", "地方").
+			GroupBy("timestamp").OrderBy("timestamp DESC").Limit(7).Find(&difangs)
+		if err != nil {
+			return
+		}
+
+		for _, item := range difangs {
+			fenleis.Difang = append(fenleis.Difang, item.Count)
+		}
+
+		err = db.MasterDB.Table("type_count").Select("timestamp, SUM(count) AS count").Where("load_type LIKE ?", "观点").
+			GroupBy("timestamp").OrderBy("timestamp DESC").Limit(7).Find(&guangdians)
+		if err != nil {
+			return
+		}
+		for _, item := range guangdians {
+			fenleis.Guandian = append(fenleis.Guandian, item.Count)
+			fenleis.Qita = append(fenleis.Qita, rand.Intn(100))
+			fenleis.Date = append(fenleis.Date, item.Timestamp)
+		}
 
 		c.JSON(http.StatusOK, fenleis)
 
@@ -171,14 +200,6 @@ func main() {
 		//fmt.Println(end_date)
 		err = db.MasterDB.Table("timeip").Cols("ip_address").Where("timestamp between ? and ?",
 			start_date, end_date).Find(&ips)
-
-		//var tcs []struct {
-		//	IpAddress string `json:"ip_address"`
-		//	Count     int    `json:"count"`
-		//}
-		//err = db.MasterDB.Table("timeip").Select("ip_address, count(*) as count").Where("timestamp between ? and ?",
-		//	start_date, end_date).GroupBy("ip_address").OrderBy("count").Find(&tcs)
-
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -222,18 +243,8 @@ func main() {
 			start_date = requestData.Start[:4]
 			end_date = requestData.End[:4]
 		}
-		//var data1 = new(struct {
-		//	Data   []string
-		//	Values []int
-		//})
+
 		data := db.Selecttb(start_date, end_date)
-		//
-		//err = db.MasterDB.Table("time_count").GroupBy("year").Count(&starts).Where("timestamp like '?%'", start_date).Find(&starts)
-		//err = db.MasterDB.Table("time_count").Cols("year").Where("timestamp like '?%'", end_date).Find(&ends)
-		//if err != nil {
-		//	fmt.Println(err)
-		//	return
-		//}
 
 		appG.ResponseSucMsg(data)
 	})
